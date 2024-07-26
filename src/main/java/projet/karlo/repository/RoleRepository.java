@@ -6,4 +6,5 @@ import projet.karlo.model.Role;
 
 public interface RoleRepository extends JpaRepository<Role,String>{
     
+    Role findByLibelle(String libelle);
 }
