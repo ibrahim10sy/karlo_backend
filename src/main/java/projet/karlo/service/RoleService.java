@@ -42,12 +42,11 @@ public class RoleService {
 
     public List<Role> getAllRole() {
         List<Role> role = roleRepository.findAll();
-    
+
         if (role.isEmpty())
             throw new EntityNotFoundException("Aucune role trouvée");
-    
+
         role.sort(Comparator.comparing(Role::getLibelle));
-        
         return role;
     }
 

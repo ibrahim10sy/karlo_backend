@@ -23,12 +23,12 @@ public class TypeVoiture {
     private String description;
 
     @OneToMany
-    (mappedBy = "type_voiture")
+    (mappedBy = "typeVoiture")
     @JsonIgnore
-    private List<VoitureLouer> voitureLouers;
+    private List<VoitureLouer> voitureLouer;
 
     @OneToMany
-    (mappedBy = "type_voiture")
+    (mappedBy = "typeVoiture")
     @JsonIgnore
     private List<VoitureVendre> voitureVendre;
 }

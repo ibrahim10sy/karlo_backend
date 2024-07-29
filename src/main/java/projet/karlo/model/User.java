@@ -32,6 +32,8 @@ public class User {
     @Column(nullable = false)
     private String dateAjout;
 
+    private Boolean statut = false;
+
     @OneToMany
     (mappedBy = "user")
     @JsonIgnore

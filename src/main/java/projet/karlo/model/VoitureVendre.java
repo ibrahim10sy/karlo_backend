@@ -1,7 +1,6 @@
 package projet.karlo.model;
 
 import jakarta.persistence.*;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 
@@ -26,12 +25,15 @@ public class VoitureVendre {
 
     @Column(nullable = false)
     private String dateAjout;
-    
+
+    @Column(nullable = true)
+    private String photo;
+
     @Column(nullable = true)
     private String dateModif;
 
     @Column(nullable = false)
-    private int nbreView;
+    private int nbreView = 0;
 
     @Column(nullable = false)
     private int nbPortiere;
@@ -49,5 +51,9 @@ public class VoitureVendre {
     TypeVoiture typeVoiture;
 
     @ManyToOne
-    TypeReservoire typeReservoire;
+    User user;
+
+    @ManyToOne
+    TypeReservoir typeReservoir;
+
 }

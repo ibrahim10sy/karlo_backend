@@ -2,32 +2,30 @@ package projet.karlo.service;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import projet.karlo.controller.MarqueController;
+import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.model.Marque;
 import projet.karlo.repository.MarqueRepository;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import java.nio.file.Paths;
-import java.util.*;
 
 @Service
-public class MarqueService {
-    
+public class MarquesService {
+
     @Autowired
     MarqueRepository marqueRepository;
     @Autowired
     IdGenerator idGenerator;
 
-    public Marque createMarque(Marque marque, MultipartFile logoFile) throws Exception{
+     public Marque createMarque(Marque marque, MultipartFile logoFile) throws Exception{
         Marque m =  marqueRepository.findByNomMarque(marque.getNomMarque());
 
         if(m != null)
@@ -40,7 +38,7 @@ public class MarqueService {
                     if (!Files.exists(imageRootLocation)) {
                         Files.createDirectories(imageRootLocation);
                     }
-    
+
                     String imageName = UUID.randomUUID().toString() + "_" + logoFile.getOriginalFilename();
                     Path imagePath = imageRootLocation.resolve(imageName);
                     Files.copy(logoFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
@@ -58,7 +56,7 @@ public class MarqueService {
         return marqueRepository.save(marque);
     }
 
-    public Marque updatMarque(Marque marque, String id, MultipartFile logoFile) throws Exception {
+    public Marque updateMarque(Marque marque, String id, MultipartFile logoFile) throws Exception {
         Marque m = marqueRepository.findById(id).orElseThrow(()->new IllegalStateException("Marque non trouvé"));
 
         m.setNomMarque(marque.getNomMarque());
@@ -83,5 +81,21 @@ public class MarqueService {
             }
         }
         return marqueRepository.save(m);
+    }
+
+    public List<Marque> getAllMarque() {
+        List<Marque> marque = marqueRepository.findAll();
+
+        if (marque.isEmpty())
+            throw new EntityNotFoundException("Aucune marque trouvée");
+
+            marque.sort(Comparator.comparing(Marque::getNomMarque));
+        return marque;
+    }
+
+    public String deleteMarque(String idMarque){
+        Marque marque = marqueRepository.findById(idMarque).orElseThrow(() -> new IllegalStateException("Marque non trouvé") );
+        marqueRepository.delete(marque);
+        return "Marque supprimée avec succès";
     }
 }

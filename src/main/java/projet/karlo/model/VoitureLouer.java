@@ -28,8 +28,11 @@ public class VoitureLouer {
     @Column(nullable = true)
     private String dateModif;
 
+    @Column(nullable = true)
+    private String photo;
+
     @Column(nullable = false)
-    private int nbreView;
+    private int nbreView = 0 ;
 
     @Column(nullable = false)
     private int nbPortiere;
@@ -40,7 +43,7 @@ public class VoitureLouer {
     @Column(nullable = false)
     private int prixAugmente;
 
-    private Boolean isChauffeur;
+    private Boolean isChauffeur = false;
 
     @ManyToOne
     Marque marque;
@@ -49,7 +52,7 @@ public class VoitureLouer {
     TypeVoiture typeVoiture;
 
     @ManyToOne
-    TypeReservoire typeReservoire;
+    TypeReservoir typeReservoir;
 
     @ManyToOne
     User user;

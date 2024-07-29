@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class TypeReservoire {
+public class TypeReservoir {
     
     @Id
     private String idTypeReservoir;
@@ -21,12 +21,12 @@ public class TypeReservoire {
     private String description;
 
     @OneToMany
-    (mappedBy = "type_reservoire")
+    (mappedBy = "typeReservoir")
     @JsonIgnore
     private List<VoitureLouer> voitureLouers;
 
     @OneToMany
-    (mappedBy = "type_reservoire")
+    (mappedBy = "typeReservoir")
     @JsonIgnore
     private List<VoitureVendre> voitureVendre;
 }
