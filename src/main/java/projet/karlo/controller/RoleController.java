@@ -39,7 +39,7 @@ public class RoleController {
     }
 
     @GetMapping("/getAllRole")
-    @Operation(summary="Liste de tout les voiture")
+    @Operation(summary="Liste de tout les rôles")
     public ResponseEntity<List<Role>> getAll(){
         return new ResponseEntity<>(roleService.getAllRole(), HttpStatus.OK);
     }

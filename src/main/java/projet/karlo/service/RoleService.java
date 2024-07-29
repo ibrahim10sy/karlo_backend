@@ -13,7 +13,7 @@ import projet.karlo.model.User;
 import projet.karlo.repository.RoleRepository;
 
 public class RoleService {
-    
+
     @Autowired
     RoleRepository roleRepository;
     @Autowired

@@ -18,6 +18,9 @@ public class Contact {
 
     @Column(nullable = false)
     private String telephone;
+  
+    @Column(nullable = false)
+    private String dateAjout;
 
     @Column(nullable = false)
     private String message;

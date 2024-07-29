@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,5 +61,12 @@ public class UserController {
     @Operation(summary="Supprimé de user")
     public String deleteUsers(@PathVariable String id) {
         return userService.deleteUser(id);
+    }
+
+    @GetMapping("/login")
+    @Operation(summary = "Connexion ")
+    public User connexions(@RequestParam("email")  String email,
+                            @RequestParam("password")  String password) {
+        return userService.connexion(email, password);
     }
 }
