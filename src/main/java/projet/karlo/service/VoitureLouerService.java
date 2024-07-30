@@ -30,6 +30,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import projet.karlo.model.Image;
+
 @Service
 public class VoitureLouerService {
     
@@ -46,7 +48,7 @@ public class VoitureLouerService {
     @Autowired
     MarqueRepository marqueRepository;
 
-    public VoitureLouer createVoiture(VoitureLouer vLouer, MultipartFile imageFile) throws Exception{
+    public VoitureLouer createVoiture(VoitureLouer vLouer, List<MultipartFile> imageFiles) throws Exception{
         User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
 
         TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
@@ -67,31 +69,34 @@ public class VoitureLouerService {
         if(typeRe == null)
             throw new IllegalStateException("Aucun type de reservoir trouvé trouvée");
         
-         // Traitement du fichier image 
-            if (imageFile != null) {
-                String imageLocation = "/ais";
-                try {
-                    Path imageRootLocation = Paths.get(imageLocation);
-                    if (!Files.exists(imageRootLocation)) {
-                        Files.createDirectories(imageRootLocation);
-                    }
-    
-                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                    Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
+          // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        Path imageRootLocation = Paths.get(imageLocation);
+        if (!Files.exists(imageRootLocation)) {
+            Files.createDirectories(imageRootLocation);
+        }
 
-                    vLouer.setPhoto(imageName);
-                } catch (IOException e) {
-                    throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
-                }
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
+                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = imageRootLocation.resolve(imageName);
+                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Image imageVoiture = new Image();
+                imageVoiture.setImageName(imageName);
+                imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                imageVoiture.setVoitureLouer(vLouer);
+                vLouer.getImages().add(imageVoiture);
             }
+        }
+    }
             return voitureLouerRepository.save(vLouer);
     }
 
-    public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, MultipartFile imageFile) throws Exception{
-        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
-
+    public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
+        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
+    
         v.setModele(vlouer.getModele());
         v.setMatricule(vlouer.getMatricule());
         v.setAnnee(vlouer.getAnnee());
@@ -100,40 +105,45 @@ public class VoitureLouerService {
         v.setPrixProprietaire(vlouer.getPrixProprietaire());
         v.setPrixAugmente(vlouer.getPrixAugmente());
         v.setIsChauffeur(vlouer.getIsChauffeur());
-
-        if(vlouer.getTypeVoiture() != null){
+    
+        if (vlouer.getTypeVoiture() != null) {
             v.setTypeVoiture(vlouer.getTypeVoiture());
         }
-
-        if(vlouer.getTypeReservoir() != null){
+    
+        if (vlouer.getTypeReservoir() != null) {
             v.setTypeReservoir(vlouer.getTypeReservoir());
         }
-
-        if(vlouer.getMarque() != null){
+    
+        if (vlouer.getMarque() != null) {
             v.setMarque(vlouer.getMarque());
         }
-
-         // Traitement du fichier image
-         if (imageFile != null) {
-            String imageLocation = "/ais";
-            try {
-                Path imageRootLocation = Paths.get(imageLocation);
-                if (!Files.exists(imageRootLocation)) {
-                    Files.createDirectories(imageRootLocation);
+    
+        // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            Path imageRootLocation = Paths.get(imageLocation);
+            if (!Files.exists(imageRootLocation)) {
+                Files.createDirectories(imageRootLocation);
+            }
+    
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                    Path imagePath = imageRootLocation.resolve(imageName);
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+    
+                    Image imageVoiture = new Image();
+                    imageVoiture.setImageName(imageName);
+                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                    imageVoiture.setVoitureLouer(v);
+                    v.getImages().add(imageVoiture);
                 }
-
-                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                Path imagePath = imageRootLocation.resolve(imageName);
-                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
-
-                v.setPhoto(imageName);
-            } catch (IOException e) {
-                throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
             }
         }
+    
         return voitureLouerRepository.save(v);
     }
+    
 
 
     public List<VoitureLouer> getAllVoiture(){

@@ -16,7 +16,7 @@ import projet.karlo.repository.UserRepository;
 
 @Service
 public class UserService {
-
+      
     @Autowired
     UserRepository userRepository;
     @Autowired

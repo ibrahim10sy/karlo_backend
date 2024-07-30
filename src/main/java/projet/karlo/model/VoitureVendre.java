@@ -1,5 +1,7 @@
 package projet.karlo.model;
 
+import java.util.List;
+
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -25,9 +27,6 @@ public class VoitureVendre {
 
     @Column(nullable = false)
     private String dateAjout;
-
-    @Column(nullable = true)
-    private String photo;
 
     @Column(nullable = true)
     private String dateModif;
@@ -56,4 +55,6 @@ public class VoitureVendre {
     @ManyToOne
     TypeReservoir typeReservoir;
 
+    @OneToMany(mappedBy = "voitureVendre", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images;
 }

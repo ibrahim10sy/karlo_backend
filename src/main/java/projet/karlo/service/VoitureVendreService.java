@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityNotFoundException;
+import projet.karlo.model.Image;
 import projet.karlo.model.Marque;
 import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
@@ -41,7 +42,7 @@ public class VoitureVendreService {
     @Autowired
     MarqueRepository marqueRepository;
 
-    public VoitureVendre createVoiture(VoitureVendre vLouer, MultipartFile imageFile) throws Exception{
+    public VoitureVendre createVoiture(VoitureVendre vLouer,List<MultipartFile> imageFiles) throws Exception{
         User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
 
         TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
@@ -61,30 +62,32 @@ public class VoitureVendreService {
 
         if(typeRe == null)
             throw new IllegalStateException("Aucun type de reservoir trouvé trouvée");
-        
-         // Traitement du fichier image 
-            if (imageFile != null) {
-                String imageLocation = "/ais";
-                try {
-                    Path imageRootLocation = Paths.get(imageLocation);
-                    if (!Files.exists(imageRootLocation)) {
-                        Files.createDirectories(imageRootLocation);
-                    }
-    
-                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                    Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
+      // Traitement des fichiers images
+      if (imageFiles != null && !imageFiles.isEmpty()) {
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        Path imageRootLocation = Paths.get(imageLocation);
+        if (!Files.exists(imageRootLocation)) {
+            Files.createDirectories(imageRootLocation);
+        }
 
-                    vLouer.setPhoto(imageName);
-                } catch (IOException e) {
-                    throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
-                }
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
+                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = imageRootLocation.resolve(imageName);
+                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Image imageVoiture = new Image();
+                imageVoiture.setImageName(imageName);
+                imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                imageVoiture.setVoitureVendre(vLouer);
+                vLouer.getImages().add(imageVoiture);
             }
+        }
+    }
             return voitureVendreRepository.save(vLouer);
     }
 
-    public VoitureVendre updateVoiture(VoitureVendre vlouer, String id, MultipartFile imageFile) throws Exception{
+    public VoitureVendre updateVoiture(VoitureVendre vlouer, String id,  List<MultipartFile> imageFiles) throws Exception{
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
 
         v.setModele(vlouer.getModele());
@@ -107,23 +110,26 @@ public class VoitureVendreService {
             v.setMarque(vlouer.getMarque());
         }
 
-         // Traitement du fichier image
-         if (imageFile != null) {
-            String imageLocation = "/ais";
-            try {
-                Path imageRootLocation = Paths.get(imageLocation);
-                if (!Files.exists(imageRootLocation)) {
-                    Files.createDirectories(imageRootLocation);
+        // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            Path imageRootLocation = Paths.get(imageLocation);
+            if (!Files.exists(imageRootLocation)) {
+                Files.createDirectories(imageRootLocation);
+            }
+    
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                    Path imagePath = imageRootLocation.resolve(imageName);
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+    
+                    Image imageVoiture = new Image();
+                    imageVoiture.setImageName(imageName);
+                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                    imageVoiture.setVoitureVendre(v);
+                    v.getImages().add(imageVoiture);
                 }
-
-                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                Path imagePath = imageRootLocation.resolve(imageName);
-                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
-
-                v.setPhoto(imageName);
-            } catch (IOException e) {
-                throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
             }
         }
         return voitureVendreRepository.save(v);

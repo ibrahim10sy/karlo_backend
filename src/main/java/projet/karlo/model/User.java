@@ -46,4 +46,9 @@ public class User {
 
     @ManyToOne
     Role role;
+
+    @OneToMany
+    (mappedBy = "user")
+    @JsonIgnore
+    private List<Transaction> transactions;
 }
