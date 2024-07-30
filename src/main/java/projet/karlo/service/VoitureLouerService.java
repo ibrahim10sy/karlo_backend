@@ -14,6 +14,7 @@ import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
 import projet.karlo.model.User;
 import projet.karlo.model.VoitureLouer;
+import projet.karlo.model.VoitureVendre;
 import projet.karlo.model.VoitureLouer;
 import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
@@ -137,6 +138,95 @@ public class VoitureLouerService {
 
     public List<VoitureLouer> getAllVoiture(){
         List<VoitureLouer> voitureList = voitureLouerRepository.findAll();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+      public List<VoitureLouer> getAllVoitureByMarque(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByMarque_NomMarque(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeVoiture(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeVoiture_NomTypeVoiture(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeReservoir(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeReservoir_NomTypeReservoir(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeBoite(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeBoite(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByAnnee(String annee){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByAnnee(annee);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByNbreView(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByNbreViewDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+
+    public List<VoitureLouer> getAllVoitureByPrixAugmenter(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByPrixAugmenteDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByPrixAugmenterMoinsChere(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByPrixAugmenteAsc();
 
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");

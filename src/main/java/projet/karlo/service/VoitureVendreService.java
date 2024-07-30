@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +24,6 @@ import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
 import projet.karlo.repository.TypeVoitureRepository;
 import projet.karlo.repository.UserRepository;
-import projet.karlo.repository.VoitureVendreRepository;
 import projet.karlo.repository.VoitureVendreRepository;
 
 @Service
@@ -142,6 +140,96 @@ public class VoitureVendreService {
 
         return voitureList;
     }
+
+    public List<VoitureVendre> getAllVoitureByMarque(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByMarque_NomMarque(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeVoiture(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeVoiture_NomTypeVoiture(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeReservoir(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeReservoir_NomTypeReservoir(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeBoite(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeBoite(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByAnnee(String annee){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByAnnee(annee);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByNbreView(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+
+    public List<VoitureVendre> getAllVoitureByPrixAugmenter(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByPrixAugmenteDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByPrixAugmenterMoinsChere(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByPrixAugmenteAsc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
 
     public String deleteVoiture(String id){
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvée"));
