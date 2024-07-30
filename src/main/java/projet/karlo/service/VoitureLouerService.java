@@ -14,7 +14,6 @@ import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
 import projet.karlo.model.User;
 import projet.karlo.model.VoitureLouer;
-import projet.karlo.model.VoitureLouer;
 import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
 import projet.karlo.repository.TypeVoitureRepository;
