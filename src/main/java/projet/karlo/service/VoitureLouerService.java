@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import projet.karlo.model.Image;
@@ -91,6 +92,13 @@ public class VoitureLouerService {
             }
         }
     }
+    String idcodes = idGenerator.genererCode();
+    String pattern = "yyyy-MM-dd HH:mm";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDateTime = now.format(formatter);
+        vLouer.setIdVoiture(idcodes);
+        vLouer.setDateAjout(formattedDateTime);
             return voitureLouerRepository.save(vLouer);
     }
 

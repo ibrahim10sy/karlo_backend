@@ -16,6 +16,9 @@ public class Transaction {
     @Column(nullable = false)
     private String dateTransaction;
 
+    @Column(nullable = true)
+    private String dateModif;
+
     @Column(nullable = false)
     private String description;
 

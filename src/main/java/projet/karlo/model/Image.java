@@ -24,10 +24,14 @@ public class Image {
     private String imagePath;
 
     @ManyToOne
-    @JoinColumn(name = "id_voiture", nullable = true)
+    @JoinColumn(name = "id_voitureVendre", nullable = true)
     private VoitureLouer voitureLouer;
 
     @ManyToOne
-    @JoinColumn(name = "id_voiture", nullable = true)
+    @JoinColumn(name = "id_voitureLouer", nullable = true)
     private VoitureVendre voitureVendre;
+
+    @ManyToOne
+    @JoinColumn(name = "id_reservation", nullable = true)
+    private Reservation reservation;
 }
