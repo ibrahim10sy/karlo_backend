@@ -12,7 +12,7 @@ public interface VoitureVendreRepository extends JpaRepository<VoitureVendre,Str
 
     List<VoitureVendre> findByAnnee(String annee);
     List<VoitureVendre> findByTypeBoite(String typeBoite);
-    List<VoitureVendre> findByNbreView();
+    // List<VoitureVendre> findByNbreView();
     List<VoitureVendre> findByTypeReservoir_idTypeReservoir(String id);
     List<VoitureVendre> findByTypeVoiture_idTypeVoiture(String id);
     List<VoitureVendre> findByUser_idUser(String id);

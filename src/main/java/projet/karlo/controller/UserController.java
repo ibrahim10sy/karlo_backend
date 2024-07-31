@@ -27,7 +27,7 @@ public class UserController {
 
     @PostMapping("/addUser")
     @Operation(summary="Création de l\'utilisateur")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
+    public ResponseEntity<User> createUser(@RequestBody User user) throws Exception {
         System.out.println(user.toString());
         return new ResponseEntity<>(userService.createUser(user) , HttpStatus.CREATED);
     }
@@ -57,8 +57,8 @@ public class UserController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary="Supprimé de user")
-    public String deleteUsers(@PathVariable String id) {
-        return userService.deleteUser(id);
+    public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
+        userService.deleteUser(id);
+        return  new ResponseEntity<>(HttpStatus.OK); // 204 No Content
     }
 }

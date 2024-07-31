@@ -150,17 +150,17 @@ public class VoitureVendreService {
         return "Supprimé avec succès";
     }
 
-    public VoitureVendre updateNbViev(String id) throws Exception {
-        Optional<VoitureVendre> voitureOpt = voitureVendreRepository.findById(id);
-        int count = voitureOpt.get().getNbreView();
+    // public VoitureVendre updateNbViev(String id) throws Exception {
+    //     Optional<VoitureVendre> voitureOpt = voitureVendreRepository.findById(id);
+    //     int count = voitureOpt.get().getNbreView();
 
-        if (voitureOpt.isPresent()) {
-            VoitureVendre voitureVendre = voitureOpt.get();
-            voitureVendre.setNbreView(count);
+    //     if (voitureOpt.isPresent()) {
+    //         VoitureVendre voitureVendre = voitureOpt.get();
+    //         voitureVendre.setNbreView(count);
 
-            return voitureVendreRepository.save(voitureVendre);
-        } else {
-            throw new Exception("Une erreur s'est produite");
-        }
-    }
+    //         return voitureVendreRepository.save(voitureVendre);
+    //     } else {
+    //         throw new Exception("Une erreur s'est produite");
+    //     }
+    // }
 }

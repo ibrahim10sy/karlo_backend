@@ -152,17 +152,17 @@ public class VoitureLouerService {
         return "Supprimé avec succès";
     }
 
-     public VoitureLouer updateNbViev(String id) throws Exception {
-        Optional<VoitureLouer> voitureOpt = voitureLouerRepository.findById(id);
-        int count = voitureOpt.get().getNbreView();
+    //  public VoitureLouer updateNbViev(String id) throws Exception {
+    //     Optional<VoitureLouer> voitureOpt = voitureLouerRepository.findById(id);
+    //     int count = voitureOpt.get().getNbreView();
 
-        if (voitureOpt.isPresent()) {
-            VoitureLouer VoitureLouer = voitureOpt.get();
-            VoitureLouer.setNbreView(count);
+    //     if (voitureOpt.isPresent()) {
+    //         VoitureLouer VoitureLouer = voitureOpt.get();
+    //         VoitureLouer.setNbreView(count);
 
-            return voitureLouerRepository.save(VoitureLouer);
-        } else {
-            throw new Exception("Une erreur s'est produite");
-        }
-    }
+    //         return voitureLouerRepository.save(VoitureLouer);
+    //     } else {
+    //         throw new Exception("Une erreur s'est produite");
+    //     }
+    // }
 }

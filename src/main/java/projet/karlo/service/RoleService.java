@@ -6,12 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.model.Role;
 import projet.karlo.model.User;
 import projet.karlo.repository.RoleRepository;
 
+@Service
 public class RoleService {
     
     @Autowired

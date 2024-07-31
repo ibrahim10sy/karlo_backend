@@ -24,8 +24,13 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
-    public User createUser(User user){
-
+    public User createUser(User user) throws Exception{
+        User u = userRepository.findByEmail(user.getEmail());
+    if(u != null){
+        throw new IllegalArgumentException("Cet email existe dejà");
+    }
+        String passWordHasher = passwordEncoder.encode(user.getPassword());
+        user.setPassword(passWordHasher);
         String idcodes = idGenerator.genererCode();
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);

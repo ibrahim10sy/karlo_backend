@@ -12,7 +12,7 @@ public interface VoitureLouerRepository extends JpaRepository<VoitureLouer,Strin
 
     List<VoitureLouer> findByAnnee(String annee);
     List<VoitureLouer> findByTypeBoite(String typeBoite);
-    List<VoitureLouer> findByNbreView();
+    // List<VoitureLouer> findByNbreView();
     List<VoitureLouer> findByTypeReservoir_idTypeReservoir(String id);
     List<VoitureLouer> findByTypeVoiture_idTypeVoiture(String id);
     List<VoitureLouer> findByUser_idUser(String id);
