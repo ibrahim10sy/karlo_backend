@@ -23,6 +23,8 @@ public class UserService {
     IdGenerator idGenerator ;
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    HistoriqueService historiqueService;
 
     public User createUser(User user){
 
@@ -33,7 +35,7 @@ public class UserService {
         String formattedDateTime = now.format(formatter);
         user.setIdUser(idcodes);
         user.setDateAjout(formattedDateTime);
-        
+        historiqueService.createHistorique("Ajout de l'utilisateur" + user.getNomUser() + " rôle " + user.getRole().getLibelle());
         return userRepository.save(user);
     }
 
@@ -45,7 +47,7 @@ public class UserService {
         u.setAdresse(user.getAdresse());
         u.setEmail(user.getEmail());
         u.setTelephone(user.getTelephone());
-        
+        historiqueService.createHistorique("Modification de l'utilisateur" + u.getNomUser() + ", rôle " + u.getRole().getLibelle());
         return userRepository.save(u);
     }
 
@@ -65,7 +67,7 @@ public class UserService {
 
         if(user == null)
             throw new IllegalStateException("User not found");
-
+            historiqueService.createHistorique("Suppression de l'utilisateur" + user.getNomUser() + ", rôle " + user.getRole().getLibelle());
         userRepository.delete(user);
         return "Utilisateur supprimé avec succèss";
     }
@@ -79,6 +81,7 @@ public class UserService {
         if(user.getStatut()==false){
             throw new NoContentException("Connexion échoué car votre compte  est desactivé ");
         }
+        historiqueService.createHistorique("Authentification de  " + user.getNomUser() + ", rôle " + user.getRole().getLibelle());
         return user;
         }
 

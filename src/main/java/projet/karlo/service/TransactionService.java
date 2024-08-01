@@ -19,7 +19,7 @@ import projet.karlo.repository.UserRepository;
 
 @Service
 public class TransactionService {
-   
+
     @Autowired
     TransactionRepository transRepository;
     @Autowired
@@ -28,6 +28,8 @@ public class TransactionService {
     UserRepository userRepository;
     @Autowired
     IdGenerator idGenerator ;
+    @Autowired
+    HistoriqueService historiqueService;
 
     public Transaction createTransaction(Transaction transaction) {
         User user = userRepository.findByIdUser(transaction.getUser().getIdUser());
@@ -47,7 +49,7 @@ public class TransactionService {
         String formattedDateTime = now.format(formatter);
         transaction.setIdTransaction(idcodes);
         transaction.setDateTransaction(formattedDateTime);
-
+        historiqueService.createHistorique("Ajout " + transaction.getDescription());
         return transRepository.save(transaction);
     }
 
@@ -67,6 +69,7 @@ public class TransactionService {
             t.setTypeTransaction(transaction.getTypeTransaction());
         }
 
+        historiqueService.createHistorique("Modificatipn " + t.getDescription());
         return transRepository.save(t);
     }
 
@@ -102,7 +105,7 @@ public class TransactionService {
 
     public String deleteTransaction(String id){
         Transaction t = transRepository.findById(id).orElseThrow();
-
+        historiqueService.createHistorique("Suppression " + t.getDescription());
         transRepository.delete(t);
 
         return "Supprimé avec succèss"; 

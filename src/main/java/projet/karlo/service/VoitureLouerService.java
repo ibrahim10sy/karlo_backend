@@ -48,6 +48,8 @@ public class VoitureLouerService {
     TypeVoitureRepository typeVoitureRepository;
     @Autowired
     MarqueRepository marqueRepository;
+    @Autowired
+    HistoriqueService historiqueService;
 
     public VoitureLouer createVoiture(VoitureLouer vLouer, List<MultipartFile> imageFiles) throws Exception{
         User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
@@ -99,7 +101,9 @@ public class VoitureLouerService {
         String formattedDateTime = now.format(formatter);
         vLouer.setIdVoiture(idcodes);
         vLouer.setDateAjout(formattedDateTime);
-            return voitureLouerRepository.save(vLouer);
+        historiqueService.createHistorique("Ajout de voiture de location : " + vLouer.getModele() + "matricule : " + vLouer.getMatricule());
+
+        return voitureLouerRepository.save(vLouer);
     }
 
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
@@ -148,7 +152,8 @@ public class VoitureLouerService {
                 }
             }
         }
-    
+        historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
+
         return voitureLouerRepository.save(v);
     }
     
@@ -256,6 +261,7 @@ public class VoitureLouerService {
 
     public String deleteVoiture(String id){
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvée"));
+        historiqueService.createHistorique("Suppression de la  voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
 
         voitureLouerRepository.delete(v);
         return "Supprimé avec succès";
@@ -263,10 +269,10 @@ public class VoitureLouerService {
 
      public VoitureLouer updateNbViev(String id) throws Exception {
         Optional<VoitureLouer> voitureOpt = voitureLouerRepository.findById(id);
-        int count = voitureOpt.get().getNbreView();
-
+        
         if (voitureOpt.isPresent()) {
             VoitureLouer VoitureLouer = voitureOpt.get();
+            int count = VoitureLouer.getNbreView() + 1;
             VoitureLouer.setNbreView(count);
 
             return voitureLouerRepository.save(VoitureLouer);

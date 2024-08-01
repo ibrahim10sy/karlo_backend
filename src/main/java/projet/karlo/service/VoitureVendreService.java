@@ -41,15 +41,17 @@ public class VoitureVendreService {
     TypeVoitureRepository typeVoitureRepository;
     @Autowired
     MarqueRepository marqueRepository;
+    @Autowired
+    HistoriqueService historiqueService;
 
-    public VoitureVendre createVoiture(VoitureVendre vLouer,List<MultipartFile> imageFiles) throws Exception{
-        User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
+    public VoitureVendre createVoiture(VoitureVendre vVendre,List<MultipartFile> imageFiles) throws Exception{
+        User user  = userRepository.findByIdUser(vVendre.getUser().getIdUser());
 
-        TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
+        TypeVoiture type = typeVoitureRepository.findById(vVendre.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
 
-        TypeReservoir typeRe = typeReservoirRepository.findById(vLouer.getTypeReservoir().getIdTypeReservoir()).orElseThrow();
+        TypeReservoir typeRe = typeReservoirRepository.findById(vVendre.getTypeReservoir().getIdTypeReservoir()).orElseThrow();
 
-        Marque marque = marqueRepository.findById(vLouer.getMarque().getIdMarque()).orElseThrow();
+        Marque marque = marqueRepository.findById(vVendre.getMarque().getIdMarque()).orElseThrow();
 
         if(marque == null)
             throw new IllegalStateException("Aucune marque de voiture trouvée");
@@ -79,35 +81,37 @@ public class VoitureVendreService {
                 Image imageVoiture = new Image();
                 imageVoiture.setImageName(imageName);
                 imageVoiture.setImagePath("/karlo" + imagePath.toString());
-                imageVoiture.setVoitureVendre(vLouer);
-                vLouer.getImages().add(imageVoiture);
+                imageVoiture.setVoitureVendre(vVendre);
+                vVendre.getImages().add(imageVoiture);
             }
         }
     }
-            return voitureVendreRepository.save(vLouer);
+    historiqueService.createHistorique("Ajout de voiture de location : " + vVendre.getModele() + "matricule : " + vVendre.getMatricule());
+
+            return voitureVendreRepository.save(vVendre);
     }
 
-    public VoitureVendre updateVoiture(VoitureVendre vlouer, String id,  List<MultipartFile> imageFiles) throws Exception{
+    public VoitureVendre updateVoiture(VoitureVendre vVendre, String id,  List<MultipartFile> imageFiles) throws Exception{
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
 
-        v.setModele(vlouer.getModele());
-        v.setMatricule(vlouer.getMatricule());
-        v.setAnnee(vlouer.getAnnee());
-        v.setTypeBoite(vlouer.getTypeBoite());
-        v.setNbPortiere(vlouer.getNbPortiere());
-        v.setPrixProprietaire(vlouer.getPrixProprietaire());
-        v.setPrixAugmente(vlouer.getPrixAugmente());
+        v.setModele(vVendre.getModele());
+        v.setMatricule(vVendre.getMatricule());
+        v.setAnnee(vVendre.getAnnee());
+        v.setTypeBoite(vVendre.getTypeBoite());
+        v.setNbPortiere(vVendre.getNbPortiere());
+        v.setPrixProprietaire(vVendre.getPrixProprietaire());
+        v.setPrixAugmente(vVendre.getPrixAugmente());
 
-        if(vlouer.getTypeVoiture() != null){
-            v.setTypeVoiture(vlouer.getTypeVoiture());
+        if(vVendre.getTypeVoiture() != null){
+            v.setTypeVoiture(vVendre.getTypeVoiture());
         }
 
-        if(vlouer.getTypeReservoir() != null){
-            v.setTypeReservoir(vlouer.getTypeReservoir());
+        if(vVendre.getTypeReservoir() != null){
+            v.setTypeReservoir(vVendre.getTypeReservoir());
         }
 
-        if(vlouer.getMarque() != null){
-            v.setMarque(vlouer.getMarque());
+        if(vVendre.getMarque() != null){
+            v.setMarque(vVendre.getMarque());
         }
 
         // Traitement des fichiers images
@@ -132,6 +136,8 @@ public class VoitureVendreService {
                 }
             }
         }
+        historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
+
         return voitureVendreRepository.save(v);
     }
 
@@ -239,6 +245,7 @@ public class VoitureVendreService {
 
     public String deleteVoiture(String id){
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvée"));
+        historiqueService.createHistorique("Suppression de la  voiture  : " + v.getModele() + "matricule : " + v.getMatricule());
 
         voitureVendreRepository.delete(v);
         return "Supprimé avec succès";
@@ -246,10 +253,10 @@ public class VoitureVendreService {
 
     public VoitureVendre updateNbViev(String id) throws Exception {
         Optional<VoitureVendre> voitureOpt = voitureVendreRepository.findById(id);
-        int count = voitureOpt.get().getNbreView();
-
+        
         if (voitureOpt.isPresent()) {
             VoitureVendre voitureVendre = voitureOpt.get();
+            int count = voitureVendre.getNbreView() +1;
             voitureVendre.setNbreView(count);
 
             return voitureVendreRepository.save(voitureVendre);
