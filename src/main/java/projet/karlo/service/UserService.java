@@ -37,6 +37,7 @@ public class UserService {
         LocalDateTime now = LocalDateTime.now();
         String formattedDateTime = now.format(formatter);
         user.setIdUser(idcodes);
+        user.setStatut(true);
         user.setDateAjout(formattedDateTime);
         
         return userRepository.save(user);
@@ -50,6 +51,9 @@ public class UserService {
         u.setAdresse(user.getAdresse());
         u.setEmail(user.getEmail());
         u.setTelephone(user.getTelephone());
+        if(user.getRole() != null){
+            u.setRole(user.getRole());
+        }
         
         return userRepository.save(u);
     }
