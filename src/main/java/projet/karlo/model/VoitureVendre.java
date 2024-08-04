@@ -1,9 +1,21 @@
 package projet.karlo.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 
 @Entity
@@ -43,18 +55,25 @@ public class VoitureVendre {
     @Column(nullable = false)
     private int prixAugmente;
 
+    @ElementCollection
+    @CollectionTable(name = "voiture_images", joinColumns = @JoinColumn(name = "id_voiture"))
+    @Column(name = "image_path")
+    private List<String> images = new ArrayList<>();
+
     @ManyToOne
+    @ToString.Exclude
     Marque marque;
 
     @ManyToOne
+    @ToString.Exclude
     TypeVoiture typeVoiture;
 
     @ManyToOne
+    @ToString.Exclude
     User user;
 
     @ManyToOne
+    @ToString.Exclude
     TypeReservoir typeReservoir;
 
-    @OneToMany(mappedBy = "voitureVendre", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
 }

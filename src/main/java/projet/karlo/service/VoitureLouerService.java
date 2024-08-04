@@ -31,7 +31,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import projet.karlo.model.Image;
 
 @Service
 public class VoitureLouerService {
@@ -52,32 +51,23 @@ public class VoitureLouerService {
     HistoriqueService historiqueService;
 
     public VoitureLouer createVoiture(VoitureLouer vLouer, List<MultipartFile> imageFiles) throws Exception {
-        User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
+        // Vérification de l'existence des entités associées
+        User user = userRepository.findByIdUser(vLouer.getUser().getIdUser());
+        TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture())
+                .orElseThrow(() -> new EntityNotFoundException("Type de voiture non trouvé"));
+        TypeReservoir typeRe = typeReservoirRepository.findById(vLouer.getTypeReservoir().getIdTypeReservoir())
+                .orElseThrow(() -> new EntityNotFoundException("Type de réservoir non trouvé"));
+        Marque marque = marqueRepository.findById(vLouer.getMarque().getIdMarque())
+                .orElseThrow(() -> new EntityNotFoundException("Marque de voiture non trouvée"));
     
-        TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
+        // Génération de l'ID et mise à jour de la date
+        String idcodes = idGenerator.genererCode();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        vLouer.setIdVoiture(idcodes);
+        vLouer.setDateAjout(now.format(formatter));
     
-        TypeReservoir typeRe = typeReservoirRepository.findById(vLouer.getTypeReservoir().getIdTypeReservoir()).orElseThrow();
-    
-        Marque marque = marqueRepository.findById(vLouer.getMarque().getIdMarque()).orElseThrow();
-    
-        if (marque == null)
-            throw new IllegalStateException("Aucune marque de voiture trouvée");
-    
-        if (user == null)
-            throw new IllegalStateException("Aucun utilisateur trouvé");
-    
-        if (type == null)
-            throw new IllegalStateException("Aucun type de voiture trouvé");
-    
-        if (typeRe == null)
-            throw new IllegalStateException("Aucun type de reservoir trouvé");
-    
-        // Initialisation de la liste d'images si elle est null
-        if (vLouer.getImages() == null) {
-            vLouer.setImages(new ArrayList<>());
-        }
-    
-        // Traitement des fichiers images
+        // Traitement des fichiers d'images
         if (imageFiles != null && !imageFiles.isEmpty()) {
             String imageLocation = "C:\\xampp\\htdocs\\karlo";
             Path imageRootLocation = Paths.get(imageLocation);
@@ -85,33 +75,27 @@ public class VoitureLouerService {
                 Files.createDirectories(imageRootLocation);
             }
     
+            List<String> imagePaths = new ArrayList<>();
             for (MultipartFile imageFile : imageFiles) {
                 if (!imageFile.isEmpty()) {
                     String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                     Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-    
-                    Image imageVoiture = new Image();
-                    imageVoiture.setImageName(imageName);
-                    imageVoiture.setImagePath("/karlo/" + imageName);
-                    imageVoiture.setVoitureLouer(vLouer);
-                    vLouer.getImages().add(imageVoiture);
+                    try {
+                        Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                        imagePaths.add("/karlo/" + imageName);
+                    } catch (IOException e) {
+                        throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+                    }
                 }
             }
+            vLouer.setImages(imagePaths);
         }
-    
-        String idcodes = idGenerator.genererCode();
-        String pattern = "yyyy-MM-dd HH:mm";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
-        LocalDateTime now = LocalDateTime.now();
-        String formattedDateTime = now.format(formatter);
-        vLouer.setIdVoiture(idcodes);
-        vLouer.setDateAjout(formattedDateTime);
+
+        // Création de l'historique
         historiqueService.createHistorique("Ajout de voiture de location : " + vLouer.getModele() + " matricule : " + vLouer.getMatricule());
-    
+
         return voitureLouerRepository.save(vLouer);
     }
-    
 
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
@@ -137,28 +121,30 @@ public class VoitureLouerService {
             v.setMarque(vlouer.getMarque());
         }
     
-        // Traitement des fichiers images
-        if (imageFiles != null && !imageFiles.isEmpty()) {
+         // Traitement des fichiers d'images
+         if (imageFiles != null && !imageFiles.isEmpty()) {
             String imageLocation = "C:\\xampp\\htdocs\\karlo";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
             }
     
+            List<String> imagePaths = new ArrayList<>();
             for (MultipartFile imageFile : imageFiles) {
                 if (!imageFile.isEmpty()) {
                     String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                     Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-    
-                    Image imageVoiture = new Image();
-                    imageVoiture.setImageName(imageName);
-                    imageVoiture.setImagePath("/karlo" + imageName);
-                    imageVoiture.setVoitureLouer(v);
-                    v.getImages().add(imageVoiture);
+                    try {
+                        Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                        imagePaths.add("/karlo/" + imageName);
+                    } catch (IOException e) {
+                        throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+                    }
                 }
             }
+            v.setImages(imagePaths);
         }
+
         historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
 
         return voitureLouerRepository.save(v);

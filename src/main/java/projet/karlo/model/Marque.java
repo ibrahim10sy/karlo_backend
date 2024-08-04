@@ -1,12 +1,15 @@
 package projet.karlo.model;
 
-import lombok.Data;
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -21,13 +24,15 @@ public class Marque {
     @Column(nullable = false)
     private String logo;
     
-    @OneToMany
-    (mappedBy = "marque")
+    @OneToMany(mappedBy = "marque")
     @JsonIgnore
+    @ToString.Exclude
     private List<VoitureLouer> voitureLouers;
+
 
     @OneToMany
     (mappedBy = "marque")
     @JsonIgnore
+    @ToString.Exclude
     private List<VoitureVendre> voitureVendre;
 }

@@ -17,7 +17,6 @@ import jakarta.persistence.EntityNotFoundException;
 
 import java.nio.file.Files;
 
-import projet.karlo.model.Image;
 import projet.karlo.model.Reservation;
 import projet.karlo.model.Role;
 import projet.karlo.model.VoitureLouer;
@@ -39,27 +38,28 @@ public class ReservationService {
     public Reservation createReservation (Reservation reservation, List<MultipartFile> imageFiles) throws IOException {
         VoitureLouer vlouer = vRepository.findById( reservation.getVoitureLouer().getIdVoiture()).orElseThrow();
 
-        // Traitement des fichiers images
-        if (imageFiles != null && !imageFiles.isEmpty()) {
+        // Traitement des fichiers d'images
+    if (imageFiles != null && !imageFiles.isEmpty()) {
         String imageLocation = "C:\\xampp\\htdocs\\karlo";
         Path imageRootLocation = Paths.get(imageLocation);
         if (!Files.exists(imageRootLocation)) {
             Files.createDirectories(imageRootLocation);
         }
 
+        List<String> imagePaths = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
             if (!imageFile.isEmpty()) {
                 String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                 Path imagePath = imageRootLocation.resolve(imageName);
-                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-
-                Image imageVoiture = new Image();
-                imageVoiture.setImageName(imageName);
-                imageVoiture.setImagePath("/karlo" + imagePath.toString());
-                imageVoiture.setReservation(reservation);
-                reservation.getPiecesCient().add(imageVoiture);
+                try {
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                    imagePaths.add("/karlo/" + imageName);
+                } catch (IOException e) {
+                    throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+                }
             }
         }
+        reservation.setImages(imagePaths);
     }
 
         String idcodes = idGenerator.genererCode();
@@ -88,28 +88,30 @@ public class ReservationService {
             res.setVoitureLouer(reservation.getVoitureLouer());
         }
 
-         // Traitement des fichiers images
-         if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\xampp\\htdocs\\karlo";
-            Path imageRootLocation = Paths.get(imageLocation);
-            if (!Files.exists(imageRootLocation)) {
-                Files.createDirectories(imageRootLocation);
-            }
-    
-            for (MultipartFile imageFile : imageFiles) {
-                if (!imageFile.isEmpty()) {
-                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                    Path imagePath = imageRootLocation.resolve(imageName);
+          // Traitement des fichiers d'images
+    if (imageFiles != null && !imageFiles.isEmpty()) {
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        Path imageRootLocation = Paths.get(imageLocation);
+        if (!Files.exists(imageRootLocation)) {
+            Files.createDirectories(imageRootLocation);
+        }
+
+        List<String> imagePaths = new ArrayList<>();
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
+                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = imageRootLocation.resolve(imageName);
+                try {
                     Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-    
-                    Image imageVoiture = new Image();
-                    imageVoiture.setImageName(imageName);
-                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
-                    imageVoiture.setReservation(reservation);
-                    reservation.getPiecesCient().add(imageVoiture);
+                    imagePaths.add("/karlo/" + imageName);
+                } catch (IOException e) {
+                    throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                 }
             }
         }
+        res.setImages(imagePaths);
+    }
+
 
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
@@ -122,13 +124,12 @@ public class ReservationService {
     }
 
     public List<Reservation> getAllReservation() {
-        
+
         List<Reservation> res = rRepository.findAll();
 
         if (res.isEmpty()){
             throw new EntityNotFoundException("Aucune reservation trouvée");
         }
-    
             res.sort(Comparator.comparing(Reservation::getDateAjout));
         return res;
     }
