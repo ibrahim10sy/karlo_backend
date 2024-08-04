@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -11,7 +12,9 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.exception.NoContentException;
+import projet.karlo.model.Role;
 import projet.karlo.model.User;
+import projet.karlo.repository.RoleRepository;
 import projet.karlo.repository.UserRepository;
 
 @Service
@@ -25,9 +28,15 @@ public class UserService {
     BCryptPasswordEncoder passwordEncoder;
     @Autowired
     HistoriqueService historiqueService;
+    @Autowired
+    RoleRepository roleRepository;
 
     public User createUser(User user){
+        // Role role = roleRepository.findById(user.getRole().getIdRole());
 
+        // if(role == null)
+        //     throw new IllegalStateException("Aucun role trouvée");
+        
         String idcodes = idGenerator.genererCode();
         String pattern = "yyyy-MM-dd HH:mm";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
@@ -62,6 +71,22 @@ public class UserService {
         return users;
     }
     
+
+    public User updatePassWord(String id, String newPassWord) throws Exception {
+        Optional<User> userOpt = userRepository.findById(id);
+    
+        if (userOpt.isPresent()) {
+            User user = userOpt.get();
+    
+            // Hacher le nouveau mot de passe
+            String hashedPassword = passwordEncoder.encode(newPassWord);
+            user.setPassword(hashedPassword);
+            return userRepository.save(user);
+        } else {
+            throw new Exception("User non trouvé avec l'ID : " + id);
+        }
+    }
+
     public String deleteUser(String idUser){
         User user = userRepository.findById(idUser).orElseThrow(() -> new IllegalStateException("User non trouvé") );
 
@@ -93,6 +118,7 @@ public class UserService {
             } catch (Exception e) {
                 throw new Exception("Erreur lors de l'activation du User: " + e.getMessage());
             }
+            historiqueService.createHistorique("Activation de l'utilisateur" + user.getNomUser() + " rôle " + user.getRole().getLibelle());
             return userRepository.save(user);
         }
     
@@ -104,6 +130,7 @@ public class UserService {
             } catch (Exception e) {
                 throw new Exception("Erreur lors de la desactivation du User : " + e.getMessage());
             }
+            historiqueService.createHistorique("Désactivation de l'utilisateur" + user.getNomUser() + " rôle " + user.getRole().getLibelle());
             return userRepository.save(user);
         }
     

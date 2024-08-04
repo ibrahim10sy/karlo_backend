@@ -13,14 +13,14 @@ public interface VoitureLouerRepository extends JpaRepository<VoitureLouer,Strin
 
     List<VoitureLouer> findByAnnee(String annee);
     List<VoitureLouer> findByTypeBoite(String typeBoite);
-    List<VoitureLouer> findByNbreView();
+    // List<VoitureLouer> findByNbreView();
     List<VoitureLouer> findByTypeReservoir_NomTypeReservoir(String nom);
     List<VoitureLouer> findByTypeVoiture_NomTypeVoiture(String nom);
     List<VoitureLouer> findByUser_idUser(String id);
     List<VoitureLouer> findByMarque_NomMarque(String id);
 
      // Pour récupérer toutes les voitures triées par nombre de vues en ordre décroissant
-    List<VoitureLouer> findAllByOrderByNbreViewDesc();
+    //  List<VoitureLouer> findAllByOrderByNbreViewDesc();
 
      // Pour récupérer toutes les voitures triées par prix augmenté en ordre décroissant
     List<VoitureLouer> findAllByOrderByPrixAugmenteDesc();

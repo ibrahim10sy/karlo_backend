@@ -1,5 +1,6 @@
 package projet.karlo.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.*;
@@ -31,7 +32,7 @@ public class VoitureLouer {
     private String dateModif;
 
     @Column(nullable = false)
-    private int nbreView = 0 ;
+    private int nbreView;
 
     @Column(nullable = false)
     private int nbPortiere;
@@ -57,5 +58,9 @@ public class VoitureLouer {
     User user;
 
     @OneToMany(mappedBy = "voitureLouer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    private List<Image> images = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "voitureLouer")
+    private List<Reservation> reservation;
 }

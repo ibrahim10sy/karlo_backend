@@ -14,8 +14,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI usersMicroserviceOpenAPI() {
         return new OpenAPI()
-                .info(new Info().title("Projet AIS) ")
-                        .description("API Projet AIS  ")
+                .info(new Info().title("Projet karlo car ")
+                        .description("API Projet karlo car  ")
                         .version("1.0"));
     }
     

@@ -32,7 +32,7 @@ public class VoitureVendre {
     private String dateModif;
 
     @Column(nullable = false)
-    private int nbreView = 0;
+    private int nbreView;
 
     @Column(nullable = false)
     private int nbPortiere;

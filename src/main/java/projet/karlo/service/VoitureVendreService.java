@@ -80,7 +80,7 @@ public class VoitureVendreService {
 
                 Image imageVoiture = new Image();
                 imageVoiture.setImageName(imageName);
-                imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                imageVoiture.setImagePath("/karlo" + imageName);
                 imageVoiture.setVoitureVendre(vVendre);
                 vVendre.getImages().add(imageVoiture);
             }
@@ -130,7 +130,7 @@ public class VoitureVendreService {
     
                     Image imageVoiture = new Image();
                     imageVoiture.setImageName(imageName);
-                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                    imageVoiture.setImagePath("/karlo" + imageName);
                     imageVoiture.setVoitureVendre(v);
                     v.getImages().add(imageVoiture);
                 }
@@ -208,16 +208,16 @@ public class VoitureVendreService {
         return voitureList;
     }
 
-    public List<VoitureVendre> getAllVoitureByNbreView(){
-        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
+    // public List<VoitureVendre> getAllVoitureByNbreViews(){
+    //     List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
 
-        if (voitureList.isEmpty())
-            throw new EntityNotFoundException("Aucune voiture trouvée");
+    //     if (voitureList.isEmpty())
+    //         throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+    //     voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
 
-        return voitureList;
-    }
+    //     return voitureList;
+    // }
 
 
     public List<VoitureVendre> getAllVoitureByPrixAugmenter(){
