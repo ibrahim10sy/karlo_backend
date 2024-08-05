@@ -11,4 +11,5 @@ public class KarloApplication {
 		SpringApplication.run(KarloApplication.class, args);
 	}
 
+	
 }

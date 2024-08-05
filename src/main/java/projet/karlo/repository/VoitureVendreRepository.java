@@ -15,5 +15,18 @@ public interface VoitureVendreRepository extends JpaRepository<VoitureVendre,Str
     // List<VoitureVendre> findByNbreView();
     List<VoitureVendre> findByTypeReservoir_idTypeReservoir(String id);
     List<VoitureVendre> findByTypeVoiture_idTypeVoiture(String id);
+    // List<VoitureVendre> findByNbreView();
+    List<VoitureVendre> findByTypeReservoir_NomTypeReservoir(String nom);
+    List<VoitureVendre> findByTypeVoiture_NomTypeVoiture(String nom);
     List<VoitureVendre> findByUser_idUser(String id);
+    List<VoitureVendre> findByMarque_NomMarque(String nom);
+
+     // Pour récupérer toutes les voitures triées par nombre de vues en ordre décroissant
+    List<VoitureVendre> findAllByOrderByNbreViewDesc();
+
+     // Pour récupérer toutes les voitures triées par prix augmenté en ordre décroissant
+    List<VoitureVendre> findAllByOrderByPrixAugmenteDesc();
+
+     // Pour récupérer toutes les voitures triées par prix augmenté en ordre croissant
+    List<VoitureVendre> findAllByOrderByPrixAugmenteAsc();
 }

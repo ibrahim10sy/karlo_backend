@@ -32,7 +32,7 @@ public class MarquesService {
             throw new IllegalStateException("Cette marque existe déjà");
 
         if (logoFile != null) {
-                String imageLocation = "/karlo";
+                String imageLocation = "C:\\xampp\\htdocs\\karlo";
                 try {
                     Path imageRootLocation = Paths.get(imageLocation);
                     if (!Files.exists(imageRootLocation)) {
@@ -62,7 +62,7 @@ public class MarquesService {
         m.setNomMarque(marque.getNomMarque());
 
         if (logoFile != null) {
-            String imageLocation = "/karlo";
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
             try {
                 Path imageRootLocation = Paths.get(imageLocation);
                 if (!Files.exists(imageRootLocation)) {

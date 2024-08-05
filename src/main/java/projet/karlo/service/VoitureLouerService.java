@@ -14,6 +14,9 @@ import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
 import projet.karlo.model.User;
 import projet.karlo.model.VoitureLouer;
+
+import projet.karlo.model.VoitureVendre;
+import projet.karlo.model.VoitureLouer;
 import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
 import projet.karlo.repository.TypeVoitureRepository;
@@ -26,7 +29,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import projet.karlo.model.Image;
 
 @Service
 public class VoitureLouerService {
@@ -43,8 +49,10 @@ public class VoitureLouerService {
     TypeVoitureRepository typeVoitureRepository;
     @Autowired
     MarqueRepository marqueRepository;
+    @Autowired
+    HistoriqueService historiqueService;
 
-    public VoitureLouer createVoiture(VoitureLouer vLouer, MultipartFile imageFile) throws Exception{
+    public VoitureLouer createVoiture(VoitureLouer vLouer, List<MultipartFile> imageFiles) throws Exception{
         User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
 
         TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
@@ -65,31 +73,43 @@ public class VoitureLouerService {
         if(typeRe == null)
             throw new IllegalStateException("Aucun type de reservoir trouvé trouvée");
         
-         // Traitement du fichier image 
-            if (imageFile != null) {
-                String imageLocation = "/ais";
-                try {
-                    Path imageRootLocation = Paths.get(imageLocation);
-                    if (!Files.exists(imageRootLocation)) {
-                        Files.createDirectories(imageRootLocation);
-                    }
-    
-                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                    Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
+          // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        Path imageRootLocation = Paths.get(imageLocation);
+        if (!Files.exists(imageRootLocation)) {
+            Files.createDirectories(imageRootLocation);
+        }
 
-                    vLouer.setPhoto(imageName);
-                } catch (IOException e) {
-                    throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
-                }
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
+                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                Path imagePath = imageRootLocation.resolve(imageName);
+                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+
+                Image imageVoiture = new Image();
+                imageVoiture.setImageName(imageName);
+                imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                imageVoiture.setVoitureLouer(vLouer);
+                vLouer.getImages().add(imageVoiture);
             }
-            return voitureLouerRepository.save(vLouer);
+        }
+    }
+    String idcodes = idGenerator.genererCode();
+    String pattern = "yyyy-MM-dd HH:mm";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDateTime = now.format(formatter);
+        vLouer.setIdVoiture(idcodes);
+        vLouer.setDateAjout(formattedDateTime);
+        historiqueService.createHistorique("Ajout de voiture de location : " + vLouer.getModele() + "matricule : " + vLouer.getMatricule());
+
+        return voitureLouerRepository.save(vLouer);
     }
 
-    public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, MultipartFile imageFile) throws Exception{
-        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
-
+    public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
+        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
+    
         v.setModele(vlouer.getModele());
         v.setMatricule(vlouer.getMatricule());
         v.setAnnee(vlouer.getAnnee());
@@ -98,40 +118,46 @@ public class VoitureLouerService {
         v.setPrixProprietaire(vlouer.getPrixProprietaire());
         v.setPrixAugmente(vlouer.getPrixAugmente());
         v.setIsChauffeur(vlouer.getIsChauffeur());
-
-        if(vlouer.getTypeVoiture() != null){
+    
+        if (vlouer.getTypeVoiture() != null) {
             v.setTypeVoiture(vlouer.getTypeVoiture());
         }
-
-        if(vlouer.getTypeReservoir() != null){
+    
+        if (vlouer.getTypeReservoir() != null) {
             v.setTypeReservoir(vlouer.getTypeReservoir());
         }
-
-        if(vlouer.getMarque() != null){
+    
+        if (vlouer.getMarque() != null) {
             v.setMarque(vlouer.getMarque());
         }
-
-         // Traitement du fichier image
-         if (imageFile != null) {
-            String imageLocation = "/ais";
-            try {
-                Path imageRootLocation = Paths.get(imageLocation);
-                if (!Files.exists(imageRootLocation)) {
-                    Files.createDirectories(imageRootLocation);
+    
+        // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            Path imageRootLocation = Paths.get(imageLocation);
+            if (!Files.exists(imageRootLocation)) {
+                Files.createDirectories(imageRootLocation);
+            }
+    
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                    Path imagePath = imageRootLocation.resolve(imageName);
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+    
+                    Image imageVoiture = new Image();
+                    imageVoiture.setImageName(imageName);
+                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                    imageVoiture.setVoitureLouer(v);
+                    v.getImages().add(imageVoiture);
                 }
-
-                String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                Path imagePath = imageRootLocation.resolve(imageName);
-                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
-
-                v.setPhoto(imageName);
-            } catch (IOException e) {
-                throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
             }
         }
+        historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
+
         return voitureLouerRepository.save(v);
     }
+    
 
 
     public List<VoitureLouer> getAllVoiture(){
@@ -145,8 +171,98 @@ public class VoitureLouerService {
         return voitureList;
     }
 
+      public List<VoitureLouer> getAllVoitureByMarque(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByMarque_NomMarque(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeVoiture(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeVoiture_NomTypeVoiture(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeReservoir(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeReservoir_NomTypeReservoir(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByTypeBoite(String nom){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByTypeBoite(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByAnnee(String annee){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findByAnnee(annee);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByNbreView(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByNbreViewDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+
+    public List<VoitureLouer> getAllVoitureByPrixAugmenter(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByPrixAugmenteDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureLouer> getAllVoitureByPrixAugmenterMoinsChere(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByPrixAugmenteAsc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+
+        return voitureList;
+    }
+
     public String deleteVoiture(String id){
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvée"));
+        historiqueService.createHistorique("Suppression de la  voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
 
         voitureLouerRepository.delete(v);
         return "Supprimé avec succès";
@@ -159,10 +275,17 @@ public class VoitureLouerService {
     //     if (voitureOpt.isPresent()) {
     //         VoitureLouer VoitureLouer = voitureOpt.get();
     //         VoitureLouer.setNbreView(count);
+     public VoitureLouer updateNbViev(String id) throws Exception {
+        Optional<VoitureLouer> voitureOpt = voitureLouerRepository.findById(id);
+        
+        if (voitureOpt.isPresent()) {
+            VoitureLouer VoitureLouer = voitureOpt.get();
+            int count = VoitureLouer.getNbreView() + 1;
+            VoitureLouer.setNbreView(count);
 
-    //         return voitureLouerRepository.save(VoitureLouer);
-    //     } else {
-    //         throw new Exception("Une erreur s'est produite");
-    //     }
-    // }
+            return voitureLouerRepository.save(VoitureLouer);
+        } else {
+            throw new Exception("Une erreur s'est produite");
+        }
+    }
 }

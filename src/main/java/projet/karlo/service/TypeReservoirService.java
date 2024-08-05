@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import projet.karlo.model.TypeReservoir;
+import projet.karlo.model.User;
 import projet.karlo.repository.TypeReservoirRepository;
 
 @Service
@@ -14,6 +15,8 @@ public class TypeReservoirService {
     IdGenerator idGenerator ;
     @Autowired
     TypeReservoirRepository typeReservoirRepository;
+    @Autowired
+    HistoriqueService historiqueService;
 
     public TypeReservoir createTypeReservoir(TypeReservoir typeReservoir){
         TypeReservoir r = typeReservoirRepository.findByNomTypeReservoir(typeReservoir.getNomTypeReservoir());
@@ -49,5 +52,15 @@ public class TypeReservoirService {
 
         typeReservoirRepository.delete(t);
         return "Supprimé avec succès";
+    }
+
+    public String deleteTypeReservoir(String idTypeReservoir){
+        TypeReservoir typeReservoir = typeReservoirRepository.findById(idTypeReservoir).orElseThrow(() -> new IllegalStateException("TypeReservoir non trouvé") );
+
+        if(typeReservoir == null)
+            throw new IllegalStateException("TypeReservoir not found");
+            historiqueService.createHistorique("Suppression du type reservoir" + typeReservoir.getNomTypeReservoir());
+        typeReservoirRepository.delete(typeReservoir);
+        return "TypeReservoir supprimé avec succèss";
     }
 }

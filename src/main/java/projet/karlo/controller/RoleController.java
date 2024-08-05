@@ -39,14 +39,14 @@ public class RoleController {
     }
 
     @GetMapping("/getAllRole")
-    @Operation(summary="Liste de tout les voiture")
+    @Operation(summary="Liste de tout les rôles")
     public ResponseEntity<List<Role>> getAll(){
         return new ResponseEntity<>(roleService.getAllRole(), HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary="Supprimé de Role")
-    public String deleteRoles(@PathVariable String id) {
-        return roleService.deleteRole(id);
+    public ResponseEntity<Void> deleteRole(@PathVariable("id") String id) {
+        roleService.deleteRole(id);
+        return  new ResponseEntity<>(HttpStatus.OK); 
     }
 }

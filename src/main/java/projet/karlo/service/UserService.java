@@ -11,18 +11,23 @@ import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.exception.NoContentException;
+import projet.karlo.model.Alerte;
 import projet.karlo.model.User;
 import projet.karlo.repository.UserRepository;
 
 @Service
 public class UserService {
-
+      
     @Autowired
     UserRepository userRepository;
     @Autowired
     IdGenerator idGenerator ;
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+    @Autowired
+    HistoriqueService historiqueService;
+    @Autowired
+    EmailService emailService;
 
     public User createUser(User user) throws Exception{
         User u = userRepository.findByEmail(user.getEmail());
@@ -39,7 +44,7 @@ public class UserService {
         user.setIdUser(idcodes);
         user.setStatut(true);
         user.setDateAjout(formattedDateTime);
-        
+        historiqueService.createHistorique("Ajout de l'utilisateur" + user.getNomUser() + " rôle " + user.getRole().getLibelle());
         return userRepository.save(user);
     }
 
@@ -54,6 +59,7 @@ public class UserService {
         if(user.getRole() != null){
             u.setRole(user.getRole());
         }
+        historiqueService.createHistorique("Modification de l'utilisateur" + u.getNomUser() + ", rôle " + u.getRole().getLibelle());
         return userRepository.save(u);
     }
 
@@ -73,9 +79,41 @@ public class UserService {
 
         if(user == null)
             throw new IllegalStateException("User not found");
-
+            historiqueService.createHistorique("Suppression de l'utilisateur" + user.getNomUser() + ", rôle " + user.getRole().getLibelle());
         userRepository.delete(user);
         return "Utilisateur supprimé avec succèss";
+    }
+
+
+       public User connexionUser(String email, String password) {
+        User user = userRepository.findByEmail(email);
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new EntityNotFoundException("Email ou mot de passe incorrect");
+        }
+    
+        if (!user.getStatut()) {
+            throw new NoContentException("Connexion échouée : votre compte est désactivé.");
+        }
+    
+        String pattern = "yyyy-MM-dd HH:mm";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
+        LocalDateTime now = LocalDateTime.now();
+        String formattedDateTime = now.format(formatter);
+    
+        // Vérifiez si l'utilisateur est déjà connecté
+        if (user.getIsConnected()) {
+            // Envoyer une alerte de sécurité
+            Alerte al = new Alerte(user.getEmail(), "Bonjour " +  user.getNomUser().toUpperCase() +" un utilisateur essaie de se connecter avec vos identifiants. Veuillez noter qu'on ne peut pas se connecter avec un compte sur 2 appareils différents. Nous vous conseillons de changer votre mot de passe dès que possible.", "Alerte de securité");
+           emailService.sendSimpleMail(al);
+            // Échouer la connexion
+            throw new NoContentException("Connexion échouée : un appareil est déjà connecté avec ce compte.");
+        }
+    
+        // Mettre à jour l'état de connexion de l'utilisateur
+        user.setIsConnected(true);
+        userRepository.save(user);
+    
+        return user;
     }
 
       //Se connecter
@@ -87,8 +125,34 @@ public class UserService {
         if(user.getStatut()==false){
             throw new NoContentException("Connexion échoué car votre compte  est desactivé ");
         }
+        historiqueService.createHistorique("Authentification de  " + user.getNomUser() + ", rôle " + user.getRole().getLibelle());
         return user;
         }
+
+
+        public boolean authenticate(String email, String password) {
+            User user = userRepository.findByEmail(email);
+            if (user != null) {
+                return passwordEncoder.matches(password, user.getPassword());
+            }
+            return false;
+        }
+    
+        public User findByEmail(String email) {
+            return userRepository.findByEmail(email);
+        }
+
+
+        public void logoutUser(String idUser) {
+            User user = userRepository.findById(idUser).orElseThrow(() -> new EntityNotFoundException("Utilisateur non trouvé"));
+            if (!user.getIsConnected()) {
+                throw new IllegalStateException("L'utilisateur n'est pas actuellement connecté.");
+            }
+            user.setIsConnected(false);
+            userRepository.save(user);
+        }
+
+
 
         public User active(String id) throws Exception{
             User user = userRepository.findById(id).orElseThrow(null);

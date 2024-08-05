@@ -37,14 +37,14 @@ public class MarqueController {
             @Valid @RequestParam("marque") String MarqueString,
             @RequestParam(value = "image", required = false) MultipartFile imageFile)
             throws Exception {
-                Marque Marque = new Marque();
+                Marque marque = new Marque();
                 try {
-                    Marque = new JsonMapper().readValue(MarqueString, Marque.class);
+                    marque = new JsonMapper().readValue(MarqueString, Marque.class);
                 } catch (JsonProcessingException e) {
                     throw new Exception(e.getMessage());
                 }
         
-                Marque savedMarque = marqueService.createMarque(Marque, imageFile);
+                Marque savedMarque = marqueService.createMarque(marque, imageFile);
                 System.out.println("Marque controller :" + savedMarque);
 
                 return new ResponseEntity<>(savedMarque, HttpStatus.CREATED);
@@ -57,13 +57,13 @@ public class MarqueController {
             @PathVariable String id,
             @RequestParam(value = "image", required = false) MultipartFile imageFile)
             throws Exception {
-                Marque Marque = new Marque();
+                Marque marque = new Marque();
                 try {
-                    Marque = new JsonMapper().readValue(MarqueString, Marque.class);
+                    marque = new JsonMapper().readValue(MarqueString, Marque.class);
                 } catch (JsonProcessingException e) {
                     throw new Exception(e.getMessage());
                 }
-                Marque savedMarque = marqueService.updateMarque(Marque, id, imageFile);
+                Marque savedMarque = marqueService.updateMarque(marque, id, imageFile);
 
                 return new ResponseEntity<>(savedMarque, HttpStatus.CREATED);
             }
@@ -74,9 +74,10 @@ public class MarqueController {
         return new ResponseEntity<>(marqueService.getAllMarque(), HttpStatus.OK);
     }
 
+    
     @DeleteMapping("/delete/{id}")
-    @Operation(summary="Supprimé de Marque")
-    public String deleteMarques(@PathVariable String id) {
-        return marqueService.deleteMarque(id);
+    public ResponseEntity<Void> deleteMarques(@PathVariable("id") String id) {
+        marqueService.deleteMarque(id);
+        return  new ResponseEntity<>(HttpStatus.OK); 
     }
 }

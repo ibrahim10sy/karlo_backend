@@ -20,6 +20,8 @@ public class User {
     @Column(nullable = true)
     private String email;
 
+    private Boolean isConnected;
+
     @Column(nullable = true)
     private String password;
 
@@ -46,4 +48,9 @@ public class User {
 
     @ManyToOne
     Role role;
+
+    @OneToMany
+    (mappedBy = "user")
+    @JsonIgnore
+    private List<Transaction> transactions;
 }

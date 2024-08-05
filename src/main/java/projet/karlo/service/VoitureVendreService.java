@@ -5,7 +5,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityNotFoundException;
+import projet.karlo.model.Image;
 import projet.karlo.model.Marque;
 import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
@@ -25,7 +25,6 @@ import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
 import projet.karlo.repository.TypeVoitureRepository;
 import projet.karlo.repository.UserRepository;
-import projet.karlo.repository.VoitureVendreRepository;
 import projet.karlo.repository.VoitureVendreRepository;
 
 @Service
@@ -42,15 +41,17 @@ public class VoitureVendreService {
     TypeVoitureRepository typeVoitureRepository;
     @Autowired
     MarqueRepository marqueRepository;
+    @Autowired
+    HistoriqueService historiqueService;
 
-    public VoitureVendre createVoiture(VoitureVendre vLouer, MultipartFile imageFile) throws Exception{
-        User user  = userRepository.findByIdUser(vLouer.getUser().getIdUser());
+    public VoitureVendre createVoiture(VoitureVendre vVendre,List<MultipartFile> imageFiles) throws Exception{
+        User user  = userRepository.findByIdUser(vVendre.getUser().getIdUser());
 
-        TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
+        TypeVoiture type = typeVoitureRepository.findById(vVendre.getTypeVoiture().getIdTypeVoiture()).orElseThrow();
 
-        TypeReservoir typeRe = typeReservoirRepository.findById(vLouer.getTypeReservoir().getIdTypeReservoir()).orElseThrow();
+        TypeReservoir typeRe = typeReservoirRepository.findById(vVendre.getTypeReservoir().getIdTypeReservoir()).orElseThrow();
 
-        Marque marque = marqueRepository.findById(vLouer.getMarque().getIdMarque()).orElseThrow();
+        Marque marque = marqueRepository.findById(vVendre.getMarque().getIdMarque()).orElseThrow();
 
         if(marque == null)
             throw new IllegalStateException("Aucune marque de voiture trouvée");
@@ -63,71 +64,80 @@ public class VoitureVendreService {
 
         if(typeRe == null)
             throw new IllegalStateException("Aucun type de reservoir trouvé trouvée");
-        
-         // Traitement du fichier image 
-            if (imageFile != null) {
-                String imageLocation = "/ais";
-                try {
-                    Path imageRootLocation = Paths.get(imageLocation);
-                    if (!Files.exists(imageRootLocation)) {
-                        Files.createDirectories(imageRootLocation);
-                    }
-    
-                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
-                    Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
-
-                    vLouer.setPhoto(imageName);
-                } catch (IOException e) {
-                    throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
-                }
-            }
-            return voitureVendreRepository.save(vLouer);
-    }
-
-    public VoitureVendre updateVoiture(VoitureVendre vlouer, String id, MultipartFile imageFile) throws Exception{
-        VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
-
-        v.setModele(vlouer.getModele());
-        v.setMatricule(vlouer.getMatricule());
-        v.setAnnee(vlouer.getAnnee());
-        v.setTypeBoite(vlouer.getTypeBoite());
-        v.setNbPortiere(vlouer.getNbPortiere());
-        v.setPrixProprietaire(vlouer.getPrixProprietaire());
-        v.setPrixAugmente(vlouer.getPrixAugmente());
-
-        if(vlouer.getTypeVoiture() != null){
-            v.setTypeVoiture(vlouer.getTypeVoiture());
+      // Traitement des fichiers images
+      if (imageFiles != null && !imageFiles.isEmpty()) {
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        Path imageRootLocation = Paths.get(imageLocation);
+        if (!Files.exists(imageRootLocation)) {
+            Files.createDirectories(imageRootLocation);
         }
 
-        if(vlouer.getTypeReservoir() != null){
-            v.setTypeReservoir(vlouer.getTypeReservoir());
-        }
-
-        if(vlouer.getMarque() != null){
-            v.setMarque(vlouer.getMarque());
-        }
-
-         // Traitement du fichier image
-         if (imageFile != null) {
-            String imageLocation = "/ais";
-            try {
-                Path imageRootLocation = Paths.get(imageLocation);
-                if (!Files.exists(imageRootLocation)) {
-                    Files.createDirectories(imageRootLocation);
-                }
-
+        for (MultipartFile imageFile : imageFiles) {
+            if (!imageFile.isEmpty()) {
                 String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                 Path imagePath = imageRootLocation.resolve(imageName);
                 Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                // String onlineImagePath =uploadeAlerte.uploadImageToFTP(imagePath, imageName);
 
-                v.setPhoto(imageName);
-            } catch (IOException e) {
-                throw new Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
+                Image imageVoiture = new Image();
+                imageVoiture.setImageName(imageName);
+                imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                imageVoiture.setVoitureVendre(vVendre);
+                vVendre.getImages().add(imageVoiture);
             }
         }
+    }
+    historiqueService.createHistorique("Ajout de voiture de location : " + vVendre.getModele() + "matricule : " + vVendre.getMatricule());
+
+            return voitureVendreRepository.save(vVendre);
+    }
+
+    public VoitureVendre updateVoiture(VoitureVendre vVendre, String id,  List<MultipartFile> imageFiles) throws Exception{
+        VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
+
+        v.setModele(vVendre.getModele());
+        v.setMatricule(vVendre.getMatricule());
+        v.setAnnee(vVendre.getAnnee());
+        v.setTypeBoite(vVendre.getTypeBoite());
+        v.setNbPortiere(vVendre.getNbPortiere());
+        v.setPrixProprietaire(vVendre.getPrixProprietaire());
+        v.setPrixAugmente(vVendre.getPrixAugmente());
+
+        if(vVendre.getTypeVoiture() != null){
+            v.setTypeVoiture(vVendre.getTypeVoiture());
+        }
+
+        if(vVendre.getTypeReservoir() != null){
+            v.setTypeReservoir(vVendre.getTypeReservoir());
+        }
+
+        if(vVendre.getMarque() != null){
+            v.setMarque(vVendre.getMarque());
+        }
+
+        // Traitement des fichiers images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            Path imageRootLocation = Paths.get(imageLocation);
+            if (!Files.exists(imageRootLocation)) {
+                Files.createDirectories(imageRootLocation);
+            }
+    
+            for (MultipartFile imageFile : imageFiles) {
+                if (!imageFile.isEmpty()) {
+                    String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+                    Path imagePath = imageRootLocation.resolve(imageName);
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+    
+                    Image imageVoiture = new Image();
+                    imageVoiture.setImageName(imageName);
+                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
+                    imageVoiture.setVoitureVendre(v);
+                    v.getImages().add(imageVoiture);
+                }
+            }
+        }
+        historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
+
         return voitureVendreRepository.save(v);
     }
 
@@ -143,24 +153,116 @@ public class VoitureVendreService {
         return voitureList;
     }
 
+    public List<VoitureVendre> getAllVoitureByMarque(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByMarque_NomMarque(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeVoiture(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeVoiture_NomTypeVoiture(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeReservoir(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeReservoir_NomTypeReservoir(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByTypeBoite(String nom){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByTypeBoite(nom);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByAnnee(String annee){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findByAnnee(annee);
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByNbreView(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+
+    public List<VoitureVendre> getAllVoitureByPrixAugmenter(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByPrixAugmenteDesc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+    public List<VoitureVendre> getAllVoitureByPrixAugmenterMoinsChere(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByPrixAugmenteAsc();
+
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
+
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+
+        return voitureList;
+    }
+
+
     public String deleteVoiture(String id){
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvée"));
+        historiqueService.createHistorique("Suppression de la  voiture  : " + v.getModele() + "matricule : " + v.getMatricule());
 
         voitureVendreRepository.delete(v);
         return "Supprimé avec succès";
     }
 
-    // public VoitureVendre updateNbViev(String id) throws Exception {
-    //     Optional<VoitureVendre> voitureOpt = voitureVendreRepository.findById(id);
-    //     int count = voitureOpt.get().getNbreView();
 
-    //     if (voitureOpt.isPresent()) {
-    //         VoitureVendre voitureVendre = voitureOpt.get();
-    //         voitureVendre.setNbreView(count);
+    public VoitureVendre updateNbViev(String id) throws Exception {
+        Optional<VoitureVendre> voitureOpt = voitureVendreRepository.findById(id);
+        
+        if (voitureOpt.isPresent()) {
+            VoitureVendre voitureVendre = voitureOpt.get();
+            int count = voitureVendre.getNbreView() +1;
+            voitureVendre.setNbreView(count);
 
-    //         return voitureVendreRepository.save(voitureVendre);
-    //     } else {
-    //         throw new Exception("Une erreur s'est produite");
-    //     }
-    // }
+            return voitureVendreRepository.save(voitureVendre);
+        } else {
+            throw new Exception("Une erreur s'est produite");
+        }
+    }
 }

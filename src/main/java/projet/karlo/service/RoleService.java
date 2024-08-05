@@ -15,7 +15,7 @@ import projet.karlo.repository.RoleRepository;
 
 @Service
 public class RoleService {
-    
+
     @Autowired
     RoleRepository roleRepository;
     @Autowired

@@ -44,8 +44,8 @@ public class TypeReservoireController {
     }
 
     @DeleteMapping("/delete/{id}")
-    @Operation(summary="Supprimé de TypeReservoir")
-    public String deleteTypeReservoirs(@PathVariable String id) {
-        return typeReservoirService.deleteType(id);
+    public ResponseEntity<Void> deleteTypeREservoir(@PathVariable("id") String id) {
+        typeReservoirService.deleteType(id);
+        return  new ResponseEntity<>(HttpStatus.OK); 
     }
 }

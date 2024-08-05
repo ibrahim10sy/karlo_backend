@@ -1,5 +1,7 @@
 package projet.karlo.controller;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.persistence.EntityNotFoundException;
+import projet.karlo.exception.NoContentException;
+import projet.karlo.model.Alerte;
 import projet.karlo.model.User;
 import projet.karlo.service.UserService;
 
@@ -59,6 +65,35 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable("id") String id) {
         userService.deleteUser(id);
-        return  new ResponseEntity<>(HttpStatus.OK); // 204 No Content
+        return  new ResponseEntity<>(HttpStatus.OK); 
     }
+
+    @GetMapping("/login")
+    @Operation(summary = "Connexion")
+    public User connexions(@RequestParam("email")  String email,
+                            @RequestParam("password")  String password) {
+        return userService.connexionUser(email, password);
+        
+    }
+
+    // @PostMapping("/loginss")
+    // public ResponseEntity<?> login(@RequestBody String email, @RequestBody String password) {
+    //     boolean isAuthenticated = userService.authenticate(email, password);
+    //     if (isAuthenticated) {
+    //         User user = userService.findByEmail(email);
+    //         return ResponseEntity.ok(user); // Renvoie les données de l'utilisateur
+    //     } else {
+    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid User");
+    //     }
+    // }
+
+    
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestParam String idUser) {
+        userService.logoutUser(idUser);
+        return new ResponseEntity<>("Déconnexion réussie", HttpStatus.OK);
+    }
+
+
+
 }
