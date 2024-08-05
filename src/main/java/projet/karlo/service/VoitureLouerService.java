@@ -100,7 +100,7 @@ public class VoitureLouerService {
 
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
-    
+
         v.setModele(vlouer.getModele());
         v.setMatricule(vlouer.getMatricule());
         v.setAnnee(vlouer.getAnnee());
