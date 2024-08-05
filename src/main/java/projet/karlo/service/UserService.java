@@ -49,6 +49,7 @@ public class UserService {
         user.setIdUser(idcodes);
         user.setStatut(true);
         user.setDateAjout(formattedDateTime);
+        user.setIsConnected(false);
         historiqueService.createHistorique("Ajout de l'utilisateur" + user.getNomUser() + " rôle " + user.getRole().getLibelle());
         return userRepository.save(user);
     }
