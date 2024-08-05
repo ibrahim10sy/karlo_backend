@@ -44,6 +44,11 @@ public class UserController {
         return new ResponseEntity<>(userService.updateUser(user, id), HttpStatus.OK);
     }
 
+    @PutMapping("/{id}/updatePassword")
+    public User updateUser(@PathVariable String id, @RequestParam String password) throws Exception {
+        return userService.updatePassWord(id, password);
+    }
+
     @GetMapping("/getAllUser")
     @Operation(summary="Liste de tout les voiture")
     public ResponseEntity<List<User>> getAll(){
@@ -93,6 +98,7 @@ public class UserController {
         userService.logoutUser(idUser);
         return new ResponseEntity<>("Déconnexion réussie", HttpStatus.OK);
     }
+
 
 
 

@@ -1,9 +1,22 @@
 package projet.karlo.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -31,7 +44,7 @@ public class VoitureLouer {
     private String dateModif;
 
     @Column(nullable = false)
-    private int nbreView = 0 ;
+    private int nbreView;
 
     @Column(nullable = false)
     private int nbPortiere;
@@ -44,18 +57,31 @@ public class VoitureLouer {
 
     private Boolean isChauffeur = false;
 
-    @ManyToOne
-    Marque marque;
+    @ElementCollection
+    @CollectionTable(name = "voiture_images", joinColumns = @JoinColumn(name = "id_voiture"))
+    @Column(name = "image_path")
+    private List<String> images = new ArrayList<>();
+
 
     @ManyToOne
+   
+    @ToString.Exclude
+    private Marque marque;
+
+    @ManyToOne
+   
+    @ToString.Exclude
     TypeVoiture typeVoiture;
 
     @ManyToOne
+    @ToString.Exclude
     TypeReservoir typeReservoir;
 
     @ManyToOne
+    @ToString.Exclude
     User user;
 
-    @OneToMany(mappedBy = "voitureLouer", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Image> images;
+    @OneToMany(mappedBy = "voitureLouer")
+    @JsonIgnore
+    private List<Reservation> reservation;
 }

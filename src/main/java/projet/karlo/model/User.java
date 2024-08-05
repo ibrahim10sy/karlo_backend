@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -39,11 +40,13 @@ public class User {
     @OneToMany
     (mappedBy = "user")
     @JsonIgnore
+    @ToString.Exclude
     private List<VoitureLouer> voitureLouers;
 
     @OneToMany
     (mappedBy = "user")
     @JsonIgnore
+     @ToString.Exclude
     private List<VoitureVendre> voitureVendre;
 
     @ManyToOne

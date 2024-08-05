@@ -1,17 +1,16 @@
 package projet.karlo.service;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.util.Comparator;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.model.Role;
-import projet.karlo.model.User;
 import projet.karlo.repository.RoleRepository;
+import org.springframework.stereotype.Service;
+
 
 @Service
 public class RoleService {

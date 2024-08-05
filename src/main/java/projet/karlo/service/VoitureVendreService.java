@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityNotFoundException;
-import projet.karlo.model.Image;
 import projet.karlo.model.Marque;
 import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
@@ -64,28 +64,31 @@ public class VoitureVendreService {
 
         if(typeRe == null)
             throw new IllegalStateException("Aucun type de reservoir trouvé trouvée");
-      // Traitement des fichiers images
-      if (imageFiles != null && !imageFiles.isEmpty()) {
+     
+    // Traitement des fichiers d'images
+    if (imageFiles != null && !imageFiles.isEmpty()) {
         String imageLocation = "C:\\xampp\\htdocs\\karlo";
         Path imageRootLocation = Paths.get(imageLocation);
         if (!Files.exists(imageRootLocation)) {
             Files.createDirectories(imageRootLocation);
         }
 
+        List<String> imagePaths = new ArrayList<>();
         for (MultipartFile imageFile : imageFiles) {
             if (!imageFile.isEmpty()) {
                 String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                 Path imagePath = imageRootLocation.resolve(imageName);
-                Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-
-                Image imageVoiture = new Image();
-                imageVoiture.setImageName(imageName);
-                imageVoiture.setImagePath("/karlo" + imagePath.toString());
-                imageVoiture.setVoitureVendre(vVendre);
-                vVendre.getImages().add(imageVoiture);
+                try {
+                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                    imagePaths.add("/karlo/" + imageName);
+                } catch (IOException e) {
+                    throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+                }
             }
         }
+        vVendre.setImages(imagePaths);
     }
+
     historiqueService.createHistorique("Ajout de voiture de location : " + vVendre.getModele() + "matricule : " + vVendre.getMatricule());
 
             return voitureVendreRepository.save(vVendre);
@@ -114,28 +117,30 @@ public class VoitureVendreService {
             v.setMarque(vVendre.getMarque());
         }
 
-        // Traitement des fichiers images
-        if (imageFiles != null && !imageFiles.isEmpty()) {
+       // Traitement des fichiers d'images
+         if (imageFiles != null && !imageFiles.isEmpty()) {
             String imageLocation = "C:\\xampp\\htdocs\\karlo";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
             }
     
+            List<String> imagePaths = new ArrayList<>();
             for (MultipartFile imageFile : imageFiles) {
                 if (!imageFile.isEmpty()) {
                     String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
                     Path imagePath = imageRootLocation.resolve(imageName);
-                    Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-    
-                    Image imageVoiture = new Image();
-                    imageVoiture.setImageName(imageName);
-                    imageVoiture.setImagePath("/karlo" + imagePath.toString());
-                    imageVoiture.setVoitureVendre(v);
-                    v.getImages().add(imageVoiture);
+                    try {
+                        Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+                        imagePaths.add("/karlo/" + imageName);
+                    } catch (IOException e) {
+                        throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+                    }
                 }
             }
+            v.setImages(imagePaths);
         }
+
         historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
 
         return voitureVendreRepository.save(v);
@@ -208,16 +213,16 @@ public class VoitureVendreService {
         return voitureList;
     }
 
-    public List<VoitureVendre> getAllVoitureByNbreView(){
-        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
+    // public List<VoitureVendre> getAllVoitureByNbreViews(){
+    //     List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
 
-        if (voitureList.isEmpty())
-            throw new EntityNotFoundException("Aucune voiture trouvée");
+    //     if (voitureList.isEmpty())
+    //         throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+    //     voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
 
-        return voitureList;
-    }
+    //     return voitureList;
+    // }
 
 
     public List<VoitureVendre> getAllVoitureByPrixAugmenter(){
