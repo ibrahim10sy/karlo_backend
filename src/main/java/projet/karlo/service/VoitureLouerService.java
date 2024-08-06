@@ -159,7 +159,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -170,7 +170,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -181,7 +181,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -192,7 +192,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -203,7 +203,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -214,7 +214,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -237,7 +237,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -248,7 +248,7 @@ public class VoitureLouerService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
         return voitureList;
     }

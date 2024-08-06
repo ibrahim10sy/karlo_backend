@@ -79,8 +79,8 @@ public class TransactionService {
         if(transactions.isEmpty())
             throw new IllegalStateException("No transactions");
         
-        transactions.sort(Comparator.comparing(Transaction::getDateTransaction));
-        return transactions;
+            transactions.sort(Comparator.comparing(Transaction::getDateTransaction).reversed());
+            return transactions;
     }
 
     public List<Transaction> getAllTransactionsByDate(String date) {
@@ -89,8 +89,8 @@ public class TransactionService {
         if(transactions.isEmpty())
             throw new IllegalStateException("No transactions");
         
-        transactions.sort(Comparator.comparing(Transaction::getDateTransaction));
-        return transactions;
+            transactions.sort(Comparator.comparing(Transaction::getDateTransaction).reversed());
+            return transactions;
     }
 
     public List<Transaction> getAllTransactionsByType(String libelle) {
@@ -99,8 +99,8 @@ public class TransactionService {
         if(transactions.isEmpty())
             throw new IllegalStateException("No transactions");
     
-        transactions.sort(Comparator.comparing(Transaction::getDateTransaction));
-        return transactions;
+            transactions.sort(Comparator.comparing(Transaction::getDateTransaction).reversed());
+            return transactions;
     }
 
     public String deleteTransaction(String id){

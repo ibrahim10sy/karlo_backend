@@ -153,7 +153,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -164,7 +164,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -175,7 +175,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -186,7 +186,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -197,7 +197,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -208,7 +208,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -231,7 +231,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }
@@ -242,7 +242,7 @@ public class VoitureVendreService {
         if (voitureList.isEmpty())
             throw new EntityNotFoundException("Aucune voiture trouvée");
 
-        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
         return voitureList;
     }

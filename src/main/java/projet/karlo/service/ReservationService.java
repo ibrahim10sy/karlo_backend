@@ -130,7 +130,7 @@ public class ReservationService {
         if (res.isEmpty()){
             throw new EntityNotFoundException("Aucune reservation trouvée");
         }
-            res.sort(Comparator.comparing(Reservation::getDateAjout));
+            res.sort(Comparator.comparing(Reservation::getDateAjout).reversed());
         return res;
     }
 
@@ -142,7 +142,7 @@ public class ReservationService {
             throw new EntityNotFoundException("Aucune reservation trouvée");
         }
 
-            reservation.sort(Comparator.comparing(Reservation::getDateAjout));
+            reservation.sort(Comparator.comparing(Reservation::getDateAjout).reversed());
         return reservation;
     }
 
@@ -154,7 +154,7 @@ public class ReservationService {
             throw new EntityNotFoundException("Aucune reservation trouvée");
         }
 
-            reservation.sort(Comparator.comparing(Reservation::getDateAjout));
+            reservation.sort(Comparator.comparing(Reservation::getDateAjout).reversed());
         return reservation;
     }
 
@@ -166,7 +166,7 @@ public class ReservationService {
             throw new EntityNotFoundException("Aucune reservation trouvée");
         }
 
-            reservation.sort(Comparator.comparing(Reservation::getDateAjout));
+            reservation.sort(Comparator.comparing(Reservation::getDateAjout).reversed());
         return reservation;
     }
 

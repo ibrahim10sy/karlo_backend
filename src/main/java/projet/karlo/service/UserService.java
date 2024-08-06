@@ -75,7 +75,7 @@ public class UserService {
         if (users.isEmpty())
             throw new EntityNotFoundException("Aucune utilisateur trouvée");
     
-        users.sort(Comparator.comparing(User::getNomUser));
+        users.sort(Comparator.comparing(User::getDateAjout).reversed());
         
         return users;
     }
