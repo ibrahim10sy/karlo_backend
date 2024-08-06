@@ -24,7 +24,7 @@ public interface VoitureLouerRepository extends JpaRepository<VoitureLouer,Strin
     List<VoitureLouer> findByMarque_NomMarque(String id);
 
      // Pour récupérer toutes les voitures triées par nombre de vues en ordre décroissant
-    //  List<VoitureLouer> findAllByOrderByNbreViewDesc();
+     List<VoitureLouer> findAllByOrderByNbreViewDesc();
 
      // Pour récupérer toutes les voitures triées par prix augmenté en ordre décroissant
     List<VoitureLouer> findAllByOrderByPrixAugmenteDesc();

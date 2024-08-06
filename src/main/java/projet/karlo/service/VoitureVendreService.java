@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -67,7 +69,7 @@ public class VoitureVendreService {
      
     // Traitement des fichiers d'images
     if (imageFiles != null && !imageFiles.isEmpty()) {
-        String imageLocation = "C:\\xampp\\htdocs\\karlo";
+        String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
         Path imageRootLocation = Paths.get(imageLocation);
         if (!Files.exists(imageRootLocation)) {
             Files.createDirectories(imageRootLocation);
@@ -80,7 +82,7 @@ public class VoitureVendreService {
                 Path imagePath = imageRootLocation.resolve(imageName);
                 try {
                     Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    imagePaths.add("/karlo/" + imageName);
+                    imagePaths.add("/images/" + imageName);
                 } catch (IOException e) {
                     throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                 }
@@ -88,6 +90,13 @@ public class VoitureVendreService {
         }
         vVendre.setImages(imagePaths);
     }
+
+       // Génération de l'ID et mise à jour de la date
+        String idcodes = idGenerator.genererCode();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        vVendre.setIdVoiture(idcodes);
+        vVendre.setDateAjout(now.format(formatter));
 
     historiqueService.createHistorique("Ajout de voiture de location : " + vVendre.getModele() + "matricule : " + vVendre.getMatricule());
 
@@ -213,16 +222,16 @@ public class VoitureVendreService {
         return voitureList;
     }
 
-    // public List<VoitureVendre> getAllVoitureByNbreViews(){
-    //     List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
+    public List<VoitureVendre> getAllVoitureByNbreViews(){
+        List<VoitureVendre> voitureList = voitureVendreRepository.findAllByOrderByNbreViewDesc();
 
-    //     if (voitureList.isEmpty())
-    //         throw new EntityNotFoundException("Aucune voiture trouvée");
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
 
-    //     voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureVendre::getDateAjout).reversed());
 
-    //     return voitureList;
-    // }
+        return voitureList;
+    }
 
 
     public List<VoitureVendre> getAllVoitureByPrixAugmenter(){

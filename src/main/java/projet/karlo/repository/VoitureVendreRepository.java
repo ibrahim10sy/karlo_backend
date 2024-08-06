@@ -23,7 +23,7 @@ public interface VoitureVendreRepository extends JpaRepository<VoitureVendre,Str
     List<VoitureVendre> findByMarque_NomMarque(String nom);
 
      // Pour récupérer toutes les voitures triées par nombre de vues en ordre décroissant
-    // List<VoitureVendre> findAllByOrderByNbreViewDesc();
+    List<VoitureVendre> findAllByOrderByNbreViewDesc();
 
      // Pour récupérer toutes les voitures triées par prix augmenté en ordre décroissant
     List<VoitureVendre> findAllByOrderByPrixAugmenteDesc();
