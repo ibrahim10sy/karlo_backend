@@ -53,7 +53,8 @@ public class VoitureLouerService {
 
     public VoitureLouer createVoiture(VoitureLouer vLouer, List<MultipartFile> imageFiles) throws Exception {
         // Vérification de l'existence des entités associées
-        User user = userRepository.findByIdUser(vLouer.getUser().getIdUser());
+        User user  = userRepository.findById(vLouer.getUser().getIdUser()).orElseThrow();
+
         TypeVoiture type = typeVoitureRepository.findById(vLouer.getTypeVoiture().getIdTypeVoiture())
                 .orElseThrow(() -> new EntityNotFoundException("Type de voiture non trouvé"));
         TypeReservoir typeRe = typeReservoirRepository.findById(vLouer.getTypeReservoir().getIdTypeReservoir())
@@ -70,7 +71,7 @@ public class VoitureLouerService {
     
         // Traitement des fichiers d'images
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
@@ -83,7 +84,7 @@ public class VoitureLouerService {
                     Path imagePath = imageRootLocation.resolve(imageName);
                     try {
                         Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                        imagePaths.add("/karlo/" + imageName);
+                        imagePaths.add("/images/" + imageName);
                     } catch (IOException e) {
                         throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                     }
@@ -100,7 +101,7 @@ public class VoitureLouerService {
 
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
-    
+
         v.setModele(vlouer.getModele());
         v.setMatricule(vlouer.getMatricule());
         v.setAnnee(vlouer.getAnnee());
@@ -124,7 +125,7 @@ public class VoitureLouerService {
     
          // Traitement des fichiers d'images
          if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
@@ -137,7 +138,7 @@ public class VoitureLouerService {
                     Path imagePath = imageRootLocation.resolve(imageName);
                     try {
                         Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                        imagePaths.add("/karlo/" + imageName);
+                        imagePaths.add("/images/" + imageName);
                     } catch (IOException e) {
                         throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                     }
@@ -163,6 +164,17 @@ public class VoitureLouerService {
 
         return voitureList;
     }
+
+    // public List<VoitureLouer> getAllVoitureByNombreView(){
+    //     List<VoitureLouer> voitureList = voitureLouerRepository.findAll();
+
+    //     if (voitureList.isEmpty())
+    //         throw new EntityNotFoundException("Aucune voiture trouvée");
+
+    //     voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
+
+    //     return voitureList;
+    // }
 
       public List<VoitureLouer> getAllVoitureByMarque(String nom){
         List<VoitureLouer> voitureList = voitureLouerRepository.findByMarque_NomMarque(nom);
@@ -219,16 +231,16 @@ public class VoitureLouerService {
         return voitureList;
     }
 
-    // public List<VoitureLouer> getAllVoitureByNbreViews(){
-    //     List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByNbreViewDesc();
+    public List<VoitureLouer> getAllVoitureByNbreViews(){
+        List<VoitureLouer> voitureList = voitureLouerRepository.findAllByOrderByNbreViewDesc();
 
-    //     if (voitureList.isEmpty())
-    //         throw new EntityNotFoundException("Aucune voiture trouvée");
+        if (voitureList.isEmpty())
+            throw new EntityNotFoundException("Aucune voiture trouvée");
 
-    //     voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout));
+        voitureList.sort(Comparator.comparing(VoitureLouer::getDateAjout).reversed());
 
-    //     return voitureList;
-    // }
+        return voitureList;
+    }
 
 
     public List<VoitureLouer> getAllVoitureByPrixAugmenter(){

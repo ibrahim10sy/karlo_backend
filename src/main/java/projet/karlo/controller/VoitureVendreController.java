@@ -111,11 +111,11 @@ public class VoitureVendreController {
                 return new ResponseEntity<>(voitureServices.getAllVoitureByAnnee(annee),HttpStatus.OK);
             }
 
-            // @GetMapping("/getAllByNbView")
-            // @Operation(summary="Liste de toutes les Voitures populaires")
-            // public ResponseEntity<List<VoitureVendre>> getAllVoituresBYvIew(){
-            //     return new ResponseEntity<>(voitureServices.getAllVoitureByNbreViews(),HttpStatus.OK);
-            // }
+            @GetMapping("/getAllByNbView")
+            @Operation(summary="Liste de toutes les Voitures populaires")
+            public ResponseEntity<List<VoitureVendre>> getAllVoituresBYvIew(){
+                return new ResponseEntity<>(voitureServices.getAllVoitureByNbreViews(),HttpStatus.OK);
+            }
         
             @GetMapping("/getAllByPrixChere")
             @Operation(summary="Liste de toutes les Voitures les plus chères")
