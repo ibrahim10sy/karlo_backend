@@ -71,7 +71,7 @@ public class VoitureLouerService {
     
         // Traitement des fichiers d'images
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
+            String imageLocation = "C:\\Users\\bane8\\Documents\\Spring Boot App\\Karlo_car\\images";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);

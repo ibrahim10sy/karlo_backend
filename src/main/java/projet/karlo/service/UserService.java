@@ -32,14 +32,19 @@ public class UserService {
     @Autowired
     RoleRepository roleRepository;
 
+
     @Autowired
     EmailService emailService;
 
     public User createUser(User user){
-        // Role role = roleRepository.findById(user.getRole().getIdRole());
+ 
+        User u = userRepository.findByEmail(user.getEmail());
 
-        // if(role == null)
-        //     throw new IllegalStateException("Aucun role trouvée");
+        String passWordHasher = passwordEncoder.encode(user.getPassword());
+        user.setPassword(passWordHasher);
+
+        if(u != null)
+            throw new IllegalStateException("Cet email existe déjà");
         
         String idcodes = idGenerator.genererCode();
         String pattern = "yyyy-MM-dd HH:mm";

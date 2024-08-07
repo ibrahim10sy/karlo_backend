@@ -129,10 +129,14 @@ public class VoitureVendreController {
                 return new ResponseEntity<>(voitureServices.getAllVoitureByPrixAugmenterMoinsChere(),HttpStatus.OK);
             }
 
+             
+             
+             
              @DeleteMapping("/delete/{id}")
-    @Operation(summary="Supprimé de voiture")
-    public String deleteVoitures(@PathVariable String id) {
-        return voitureServices.deleteVoiture(id);
+             @Operation(summary="Supprimé de voiture à louer")
+     public ResponseEntity<Void> deleteVoitureLouer(@PathVariable("id") String id) {
+        voitureServices.deleteVoiture(id);
+        return  new ResponseEntity<>(HttpStatus.OK);
     }
 }
 

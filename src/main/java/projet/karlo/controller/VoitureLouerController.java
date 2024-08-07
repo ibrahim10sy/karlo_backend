@@ -130,8 +130,6 @@ public class VoitureLouerController {
             }
 
 
-      
-
             @DeleteMapping("/delete/{id}")
             @Operation(summary="Supprimé de voiture")
             public ResponseEntity<Void> deleteVoitures(@PathVariable("id") String id) {
