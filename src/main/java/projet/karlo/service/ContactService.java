@@ -53,7 +53,7 @@ public class ContactService {
         if(contacts.isEmpty())
             throw new IllegalStateException("No contacts");
 
-        contacts.sort(Comparator.comparing(Contact::getDateAjout));
+        contacts.sort(Comparator.comparing(Contact::getDateAjout).reversed());
 
         return contacts;
     }

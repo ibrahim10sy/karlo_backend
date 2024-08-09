@@ -10,6 +10,8 @@ import projet.karlo.model.VoitureVendre;
 
 @Repository
 public interface VoitureLouerRepository extends JpaRepository<VoitureLouer,String>{
+    long count(); // Méthode pour compter le nombre total des voitures à louer
+
 
     List<VoitureLouer> findByAnnee(String annee);
     List<VoitureLouer> findByTypeBoite(String typeBoite);

@@ -92,9 +92,12 @@ public class ReservationController {
                return new ResponseEntity<>(reservationService.getAllReservationByDateFin(date),HttpStatus.OK);
    }
 
-     @DeleteMapping("/delete/{id}")
-   @Operation(summary="Supprimé de voiture")
-   public String deleteRes(@PathVariable String id) {
-       return reservationService.deleteRes(id);
-   }
+
+   @DeleteMapping("/delete/{id}")
+   @Operation(summary="Suppression d'une reservation de voiture")
+    public ResponseEntity<Void> deleteRes(@PathVariable("id") String id) {
+        reservationService.deleteRes(id);
+    return  new ResponseEntity<>(HttpStatus.OK); 
+    }
+    
 }

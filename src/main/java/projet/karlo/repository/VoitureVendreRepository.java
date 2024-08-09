@@ -9,6 +9,8 @@ import projet.karlo.model.VoitureVendre;
 
 @Repository
 public interface VoitureVendreRepository extends JpaRepository<VoitureVendre,String>{
+    long count(); // Méthode pour compter le nombre total des voitures à vendre
+
 
     List<VoitureVendre> findByAnnee(String annee);
     List<VoitureVendre> findByTypeBoite(String typeBoite);
@@ -30,4 +32,6 @@ public interface VoitureVendreRepository extends JpaRepository<VoitureVendre,Str
 
      // Pour récupérer toutes les voitures triées par prix augmenté en ordre croissant
     List<VoitureVendre> findAllByOrderByPrixAugmenteAsc();
+
+
 }
