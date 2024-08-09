@@ -78,7 +78,6 @@ public class UserController {
     public User connexions(@RequestParam("email")  String email,
                             @RequestParam("password")  String password) {
         return userService.connexionUser(email, password);
-        
     }
 
     // @PostMapping("/loginss")

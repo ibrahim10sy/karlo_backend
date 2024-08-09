@@ -133,12 +133,13 @@ public class UserService {
             Alerte al = new Alerte(user.getEmail(), "Bonjour " +  user.getNomUser().toUpperCase() +" un utilisateur essaie de se connecter avec vos identifiants. Veuillez noter qu'on ne peut pas se connecter avec un compte sur 2 appareils différents. Nous vous conseillons de changer votre mot de passe dès que possible.", "Alerte de securité");
            emailService.sendSimpleMail(al);
             // Échouer la connexion
-            throw new NoContentException("Connexion échouée : un appareil est déjà connecté avec ce compte.");
+            throw new IllegalArgumentException("Connexion échouée : un appareil est déjà connecté avec ce compte.");
         }
-        if (user.getRole().getLibelle().toLowerCase() == "admin") {            
+        if (user != null && user.getRole().getLibelle().toLowerCase().equals("user")) {
             // Échouer la connexion
-            throw new NoContentException("Connexion échouée : juste les administrateurs sont autorisé à se connecter à ce panel.");
+            throw new IllegalArgumentException("Connexion échouée : juste les administrateurs sont autorisés à se connecter à ce panel.");
         }
+        
     
         // Mettre à jour l'état de connexion de l'utilisateur
         user.setIsConnected(true);
