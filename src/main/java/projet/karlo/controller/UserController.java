@@ -93,9 +93,9 @@ public class UserController {
 
     
     @PutMapping("/logout/{idUser}")
-    public ResponseEntity<String> logout(@PathVariable("idUser") String idUser) {
+    public ResponseEntity<Void> logout(@PathVariable("idUser") String idUser) {
         userService.logoutUser(idUser);
-        return new ResponseEntity<>("Deconnexion réussi", HttpStatus.OK);
+        return new ResponseEntity<>( HttpStatus.OK);
     }
 
 }
