@@ -135,6 +135,10 @@ public class UserService {
             // Échouer la connexion
             throw new NoContentException("Connexion échouée : un appareil est déjà connecté avec ce compte.");
         }
+        if (user.getRole().getLibelle().toLowerCase() == "admin") {            
+            // Échouer la connexion
+            throw new NoContentException("Connexion échouée : juste les administrateurs sont autorisé à se connecter à ce panel.");
+        }
     
         // Mettre à jour l'état de connexion de l'utilisateur
         user.setIsConnected(true);
