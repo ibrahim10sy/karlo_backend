@@ -39,7 +39,7 @@ public class Vente {
     private String description;
 
     @ElementCollection
-    @CollectionTable(name = "pieces", joinColumns = @JoinColumn(name = "id_reservation"))
+    @CollectionTable(name = "pieces", joinColumns = @JoinColumn(name = "id_vente"))
     @Column(name = "image_path")
     private List<String> images = new ArrayList<>();
 

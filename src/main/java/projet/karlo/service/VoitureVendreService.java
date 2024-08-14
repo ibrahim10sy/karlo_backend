@@ -22,6 +22,7 @@ import projet.karlo.model.Marque;
 import projet.karlo.model.TypeReservoir;
 import projet.karlo.model.TypeVoiture;
 import projet.karlo.model.User;
+import projet.karlo.model.VoitureLouer;
 import projet.karlo.model.VoitureVendre;
 import projet.karlo.repository.MarqueRepository;
 import projet.karlo.repository.TypeReservoirRepository;
@@ -153,6 +154,10 @@ public class VoitureVendreService {
         historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
 
         return voitureVendreRepository.save(v);
+    }
+
+    public List<VoitureVendre> searchVoitures(String nomMarque, String nomTypeVoiture, String nomTypeReservoir, int prix) {
+        return voitureVendreRepository.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);
     }
 
 

@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +24,6 @@ import projet.karlo.repository.TypeVoitureRepository;
 import projet.karlo.repository.UserRepository;
 import projet.karlo.repository.VoitureLouerRepository;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -99,6 +99,14 @@ public class VoitureLouerService {
         return voitureLouerRepository.save(vLouer);
     }
 
+    public List<VoitureLouer> searchVoitures(String nomMarque, String nomTypeVoiture, String nomTypeReservoir, int prix) {
+        return voitureLouerRepository.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);
+    }
+
+
+
+
+
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
 
@@ -110,6 +118,9 @@ public class VoitureLouerService {
         v.setPrixProprietaire(vlouer.getPrixProprietaire());
         v.setPrixAugmente(vlouer.getPrixAugmente());
         v.setIsChauffeur(vlouer.getIsChauffeur());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
+        v.setDateModif(now.format(formatter));
     
         if (vlouer.getTypeVoiture() != null) {
             v.setTypeVoiture(vlouer.getTypeVoiture());

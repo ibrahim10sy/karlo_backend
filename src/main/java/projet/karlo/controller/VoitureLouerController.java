@@ -93,6 +93,18 @@ public class VoitureLouerController {
                 return new ResponseEntity<>(voitureServices.getAllVoitureByTypeBoite(nom),HttpStatus.OK);
             }
 
+
+            @GetMapping("/searchVoituresLouer")
+            public List<VoitureLouer> searchVoitures(
+                    @RequestParam(required = false) String nomMarque,
+                    @RequestParam(required = false) String nomTypeVoiture,
+                    @RequestParam(required = false) String nomTypeReservoir,
+                    @RequestParam(required = false) Integer prix
+                    ) {
+                return voitureServices.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);
+            }
+
+
             @GetMapping("/getAllByTypeReservoir/{nom}")
             @Operation(summary="Liste de toutes les Voitures par type reservoir")
             public ResponseEntity<List<VoitureLouer>> getAllVoituresByTypeReservoir(@PathVariable String nom){

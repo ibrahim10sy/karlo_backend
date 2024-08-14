@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import projet.karlo.model.VoitureLouer;
 import projet.karlo.model.VoitureVendre;
 import projet.karlo.service.VoitureVendreService;
 
@@ -73,6 +74,16 @@ public class VoitureVendreController {
             @Operation(summary = "Update view")
             public ResponseEntity<VoitureVendre> updateViews(@PathVariable String id) throws Exception{
                 return new ResponseEntity<>(voitureServices.updateNbViev(id), HttpStatus.OK);
+            }
+
+             @GetMapping("/searchVoituresVendre")
+            public List<VoitureVendre> searchVoitures(
+                    @RequestParam(required = false) String nomMarque,
+                    @RequestParam(required = false) String nomTypeVoiture,
+                    @RequestParam(required = false) String nomTypeReservoir,
+                    @RequestParam(required = false) Integer prix
+                    ) {
+                return voitureServices.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);
             }
 
             @GetMapping("/getAllVoiture")

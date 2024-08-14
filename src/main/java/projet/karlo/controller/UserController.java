@@ -97,5 +97,5 @@ public class UserController {
         userService.logoutUser(idUser);
         return new ResponseEntity<>( HttpStatus.OK);
     }
-
+    
 }
