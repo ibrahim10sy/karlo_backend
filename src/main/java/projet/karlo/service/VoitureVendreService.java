@@ -70,7 +70,7 @@ public class VoitureVendreService {
      
     // Traitement des fichiers d'images
     if (imageFiles != null && !imageFiles.isEmpty()) {
-        String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
+        String imageLocation = "C:\\xampp\\htdocs\\karlo";
         Path imageRootLocation = Paths.get(imageLocation);
         if (!Files.exists(imageRootLocation)) {
             Files.createDirectories(imageRootLocation);
@@ -83,7 +83,7 @@ public class VoitureVendreService {
                 Path imagePath = imageRootLocation.resolve(imageName);
                 try {
                     Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                    imagePaths.add("/images/" + imageName);
+                    imagePaths.add("/karlo/" + imageName);
                 } catch (IOException e) {
                     throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                 }
@@ -107,6 +107,8 @@ public class VoitureVendreService {
     public VoitureVendre updateVoiture(VoitureVendre vVendre, String id,  List<MultipartFile> imageFiles) throws Exception{
         VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(()-> new IllegalStateException("Voiture non trouvé"));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime now = LocalDateTime.now();
         v.setModele(vVendre.getModele());
         v.setMatricule(vVendre.getMatricule());
         v.setAnnee(vVendre.getAnnee());
@@ -114,6 +116,7 @@ public class VoitureVendreService {
         v.setNbPortiere(vVendre.getNbPortiere());
         v.setPrixProprietaire(vVendre.getPrixProprietaire());
         v.setPrixAugmente(vVendre.getPrixAugmente());
+        v.setDateModif(now.format(formatter));
 
         if(vVendre.getTypeVoiture() != null){
             v.setTypeVoiture(vVendre.getTypeVoiture());

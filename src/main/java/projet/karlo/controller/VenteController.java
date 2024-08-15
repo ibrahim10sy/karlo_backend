@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,10 +50,11 @@ public class VenteController {
         return new ResponseEntity<>(savedVente, HttpStatus.CREATED);
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @Operation(summary = "Modification d'une vente")
     public ResponseEntity<Vente> updateVente(
             @Valid @RequestParam("vente") String venteString,
+            @PathVariable String id,
             @RequestParam(value = "images", required = false) List<MultipartFile> imageFiles)
             throws Exception {
         Vente vente = new Vente();
@@ -62,7 +64,7 @@ public class VenteController {
             throw new Exception(e.getMessage());
         }
     
-        Vente savedVente = venteService.createVente(vente, imageFiles);
+        Vente savedVente = venteService.updateVente(vente, id, imageFiles);
         System.out.println(" controller :" + savedVente);
     
         return new ResponseEntity<>(savedVente, HttpStatus.CREATED);

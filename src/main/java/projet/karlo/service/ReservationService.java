@@ -118,7 +118,7 @@ public class ReservationService {
         LocalDateTime now = LocalDateTime.now();
         String formattedDateTime = now.format(formatter);
         res.setDateModif(formattedDateTime);
-        // historiqueService.createHistorique("Modification réservation de voiture " + res.getVoitureLouer().getModele() + " matricule " + res.getVoitureLouer().getMatricule());
+        historiqueService.createHistorique("Modification réservation de voiture " + res.getVoitureLouer().getModele() + " matricule " + res.getVoitureLouer().getMatricule());
 
         return rRepository.save(res);
     }

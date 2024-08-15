@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -39,11 +40,13 @@ public class Vente {
     private String description;
 
     @ElementCollection
-    @CollectionTable(name = "pieces", joinColumns = @JoinColumn(name = "id_vente"))
+    @CollectionTable(name = "pieces_vente", joinColumns = @JoinColumn(name = "id_vente"))
     @Column(name = "image_path")
     private List<String> images = new ArrayList<>();
 
     @ManyToOne
+
+    @ToString.Exclude
     VoitureVendre voitureVendre;
     
 }

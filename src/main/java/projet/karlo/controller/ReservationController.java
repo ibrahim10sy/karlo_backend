@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -49,10 +50,11 @@ public class ReservationController {
         return new ResponseEntity<>(savedreservation, HttpStatus.CREATED);
     }
 
-    @PostMapping("/update/{id}")
+    @PutMapping("/update/{id}")
     @Operation(summary = "Modification d'une reservation")
     public ResponseEntity<Reservation> updateRes(
             @Valid @RequestParam("reservation") String reservationString,
+            @PathVariable String id,
             @RequestParam(value = "images", required = false) List<MultipartFile> imageFiles)
             throws Exception {
         Reservation reservation = new Reservation();
@@ -62,10 +64,10 @@ public class ReservationController {
             throw new Exception(e.getMessage());
         }
     
-        Reservation savedreservation = reservationService.createReservation(reservation, imageFiles);
+        Reservation savedreservation = reservationService.updateReservation(reservation, id, imageFiles);
         System.out.println(" controller :" + savedreservation);
     
-        return new ResponseEntity<>(savedreservation, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedreservation, HttpStatus.OK);
     }
 
      @GetMapping("/getAllReservation")

@@ -71,7 +71,8 @@ public class VoitureLouerService {
     
         // Traitement des fichiers d'images
         if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\Users\\bane8\\Documents\\Spring Boot App\\Karlo_car\\images";
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
+            // String imageLocation = "C:\\Users\\bane8\\Documents\\Spring Boot App\\Karlo_car\\images";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
@@ -84,7 +85,7 @@ public class VoitureLouerService {
                     Path imagePath = imageRootLocation.resolve(imageName);
                     try {
                         Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                        imagePaths.add("/images/" + imageName);
+                        imagePaths.add("/karlo/" + imageName);
                     } catch (IOException e) {
                         throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                     }
@@ -106,10 +107,10 @@ public class VoitureLouerService {
 
 
 
-
     public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
         VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
-
+    
+        // Mettre à jour les informations de la voiture
         v.setModele(vlouer.getModele());
         v.setMatricule(vlouer.getMatricule());
         v.setAnnee(vlouer.getAnnee());
@@ -134,12 +135,20 @@ public class VoitureLouerService {
             v.setMarque(vlouer.getMarque());
         }
     
-         // Traitement des fichiers d'images
-         if (imageFiles != null && !imageFiles.isEmpty()) {
-            String imageLocation = "C:\\Users\\ibrah\\Desktop\\Projet SpringBoot\\Karlo_car\\images";
+        // Traitement des fichiers d'images
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            String imageLocation = "C:\\xampp\\htdocs\\karlo";
             Path imageRootLocation = Paths.get(imageLocation);
             if (!Files.exists(imageRootLocation)) {
                 Files.createDirectories(imageRootLocation);
+            }
+    
+            // Supprimer les anciennes images
+            for (String oldImagePath : v.getImages()) {
+                Path oldImageFile = imageRootLocation.resolve(oldImagePath.substring("/karlo/".length()));
+                if (Files.exists(oldImageFile)) {
+                    Files.delete(oldImageFile);
+                }
             }
     
             List<String> imagePaths = new ArrayList<>();
@@ -149,7 +158,7 @@ public class VoitureLouerService {
                     Path imagePath = imageRootLocation.resolve(imageName);
                     try {
                         Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
-                        imagePaths.add("/images/" + imageName);
+                        imagePaths.add("/karlo/" + imageName);
                     } catch (IOException e) {
                         throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
                     }
@@ -157,11 +166,66 @@ public class VoitureLouerService {
             }
             v.setImages(imagePaths);
         }
-
-        historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
-
+    
+        historiqueService.createHistorique("Modification de voiture de location : " + v.getModele() + " matricule : " + v.getMatricule());
+    
         return voitureLouerRepository.save(v);
     }
+    // public VoitureLouer updateVoiture(VoitureLouer vlouer, String id, List<MultipartFile> imageFiles) throws Exception {
+    //     VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(() -> new IllegalStateException("Voiture non trouvée"));
+
+    //     v.setModele(vlouer.getModele());
+    //     v.setMatricule(vlouer.getMatricule());
+    //     v.setAnnee(vlouer.getAnnee());
+    //     v.setTypeBoite(vlouer.getTypeBoite());
+    //     v.setNbPortiere(vlouer.getNbPortiere());
+    //     v.setPrixProprietaire(vlouer.getPrixProprietaire());
+    //     v.setPrixAugmente(vlouer.getPrixAugmente());
+    //     v.setIsChauffeur(vlouer.getIsChauffeur());
+    //     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    //     LocalDateTime now = LocalDateTime.now();
+    //     v.setDateModif(now.format(formatter));
+    
+    //     if (vlouer.getTypeVoiture() != null) {
+    //         v.setTypeVoiture(vlouer.getTypeVoiture());
+    //     }
+    
+    //     if (vlouer.getTypeReservoir() != null) {
+    //         v.setTypeReservoir(vlouer.getTypeReservoir());
+    //     }
+    
+    //     if (vlouer.getMarque() != null) {
+    //         v.setMarque(vlouer.getMarque());
+    //     }
+    
+    //      // Traitement des fichiers d'images
+    //      if (imageFiles != null && !imageFiles.isEmpty()) {
+    //         String imageLocation = "C:\\xampp\\htdocs\\karlo";
+    //         Path imageRootLocation = Paths.get(imageLocation);
+    //         if (!Files.exists(imageRootLocation)) {
+    //             Files.createDirectories(imageRootLocation);
+    //         }
+    
+    //         List<String> imagePaths = new ArrayList<>();
+    //         for (MultipartFile imageFile : imageFiles) {
+    //             if (!imageFile.isEmpty()) {
+    //                 String imageName = UUID.randomUUID().toString() + "_" + imageFile.getOriginalFilename();
+    //                 Path imagePath = imageRootLocation.resolve(imageName);
+    //                 try {
+    //                     Files.copy(imageFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
+    //                     imagePaths.add("/karlo/" + imageName);
+    //                 } catch (IOException e) {
+    //                     throw new IOException("Erreur lors de la sauvegarde de l'image : " + imageFile.getOriginalFilename(), e);
+    //                 }
+    //             }
+    //         }
+    //         v.setImages(imagePaths);
+    //     }
+
+    //     historiqueService.createHistorique("Modification  de voiture de location : " + v.getModele() + "matricule : " + v.getMatricule());
+
+    //     return voitureLouerRepository.save(v);
+    // }
     
 
 

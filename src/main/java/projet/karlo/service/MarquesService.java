@@ -74,12 +74,13 @@ public class MarquesService {
                 Files.copy(logoFile.getInputStream(), imagePath, StandardCopyOption.REPLACE_EXISTING);
                 // String onlineImagePath =fileUploade.uploadImageToFTP(imagePath, imageName);
 
-                m.setLogo(imageName);
+                m.setLogo("karlo/" + imageName);
 
             } catch (IOException e) {
                 throw new  Exception("Erreur lors du traitement du fichier image : " + e.getMessage());
             }
         }
+        
         return marqueRepository.save(m);
     }
 

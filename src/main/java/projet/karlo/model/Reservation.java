@@ -12,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.Data;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -26,7 +27,7 @@ public class Reservation {
     @Column(nullable = false)
     private String dateAjout;
   
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String dateModif;
 
     @Column(nullable = false)
@@ -45,10 +46,12 @@ public class Reservation {
     private String description;
 
     @ElementCollection
-    @CollectionTable(name = "pieces", joinColumns = @JoinColumn(name = "id_reservation"))
+    @CollectionTable(name = "pieces_reservation", joinColumns = @JoinColumn(name = "id_reservation"))
     @Column(name = "image_path")
     private List<String> images = new ArrayList<>();
 
     @ManyToOne
+
+    @ToString.Exclude
     VoitureLouer voitureLouer;
 }
