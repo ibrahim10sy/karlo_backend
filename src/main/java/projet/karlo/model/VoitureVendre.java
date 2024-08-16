@@ -49,6 +49,8 @@ public class VoitureVendre {
     @Column(nullable = false)
     private int nbPortiere;
 
+    private Boolean isVendu;
+
     @Column(nullable = false)
     private int prixProprietaire;
 

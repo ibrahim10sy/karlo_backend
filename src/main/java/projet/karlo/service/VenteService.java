@@ -7,14 +7,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.*;
-import java.util.UUID;
 
+import org.antlr.v4.runtime.IntStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import java.time.YearMonth;
+import java.util.stream.Collectors;
+
 
 import jakarta.persistence.EntityNotFoundException;
 import projet.karlo.model.Vente;
@@ -32,10 +33,17 @@ public class VenteService {
     @Autowired
     VenteRepository venteRepository;
     @Autowired
+    VoitureVendreRepository voitureVendreRepository;
+    @Autowired
     HistoriqueService historiqueService;
 
      public Vente createVente (Vente vente, List<MultipartFile> imageFiles) throws IOException {
         VoitureVendre vVendre = vRepository.findById( vente.getVoitureVendre().getIdVoiture()).orElseThrow();
+    if (vVendre != null) {
+        vVendre.setIsVendu(true); // Mettre le statut à true
+        // Vous devez sauvegarder la voiture aussi si elle est modifiée
+        voitureVendreRepository.save(vVendre);
+    }
 
         // Traitement des fichiers d'images
     if (imageFiles != null && !imageFiles.isEmpty()) {
@@ -76,10 +84,12 @@ public class VenteService {
     public Vente updateVente(Vente vente, String id , List<MultipartFile> imageFiles ) throws IOException{
         Vente vExistant = venteRepository.findById(id).orElseThrow();
 
+
         vExistant.setNomClient(vente.getNomClient());
         vExistant.setTelephone(vente.getTelephone());
         vExistant.setMontant(vente.getMontant());
         vExistant.setDescription(vente.getDescription());
+         
 
         if(vente.getVoitureVendre() != null){
             vExistant.setVoitureVendre(vente.getVoitureVendre());
@@ -117,8 +127,37 @@ public class VenteService {
         vExistant.setDateModif(formattedDateTime);
         historiqueService.createHistorique("Modification vente de voiture " + vExistant.getVoitureVendre().getModele() + " matricule " + vExistant.getVoitureVendre().getMatricule());
 
-        return venteRepository.save(vente);
+        return venteRepository.save(vExistant);
     }
+
+
+    public Map<String, Long> getTotalSalesByMonth() {
+    List<Object[]> results = venteRepository.findTotalSalesByMonth();
+    Map<String, Long> totalSalesByMonth = new HashMap<>();
+
+    // Convert the results to a map
+    for (Object[] result : results) {
+        String monthYear = (String) result[0];
+        Long totalSales = ((Number) result[1]).longValue();
+        totalSalesByMonth.put(monthYear, totalSales);
+    }
+
+    // Generate a list of all months of the current year
+    YearMonth now = YearMonth.now();
+    for (int month = 1; month <= 12; month++) {
+        String monthYear = now.withMonth(month).toString();
+        monthYear = monthYear.substring(0, 7); // Extract 'YYYY-MM'
+        totalSalesByMonth.putIfAbsent(monthYear, 0L);
+    }
+
+    return totalSalesByMonth;
+    }
+
+
+    public Long getTotalSales() {
+        return venteRepository.calculateTotalSales();
+    }
+
 
     public List<Vente> getAllVente() {
 

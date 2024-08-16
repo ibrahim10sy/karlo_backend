@@ -2,6 +2,7 @@ package projet.karlo.controller;
 
 import java.util.List;
 
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import java.util.*;
 import projet.karlo.model.Reservation;
 import projet.karlo.model.VoitureLouer;
 import projet.karlo.service.ReservationService;
@@ -69,6 +71,18 @@ public class ReservationController {
     
         return new ResponseEntity<>(savedreservation, HttpStatus.OK);
     }
+
+     @GetMapping("/totalReservationParMoi")
+     public java.util.Map<String, Long> getTotalAmountByMonth() {
+        return reservationService.getTotalAmountByMonth();
+    }
+
+
+    @GetMapping("/totalVoitureLouer")
+    public Long getTotalSommeLocation() {
+        return reservationService.getTotalReservation();
+    }
+
 
      @GetMapping("/getAllReservation")
      @Operation(summary="Liste de tout les reservations")

@@ -34,6 +34,8 @@ public class VoitureLouer {
     @Column(nullable = false)
     private String annee;
 
+    private Boolean isDisponible;
+
     @Column(nullable = false)
     private String typeBoite;
 

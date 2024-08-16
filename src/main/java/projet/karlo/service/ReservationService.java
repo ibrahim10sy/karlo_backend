@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.persistence.EntityNotFoundException;
+import java.time.YearMonth;
 
 import java.nio.file.Files;
 
@@ -33,11 +34,17 @@ public class ReservationService {
     @Autowired
     VoitureLouerRepository vRepository;
     @Autowired
+    VoitureLouerRepository voitureLouerRepository;
+    @Autowired
     HistoriqueService historiqueService;
 
     public Reservation createReservation (Reservation reservation, List<MultipartFile> imageFiles) throws IOException {
         VoitureLouer vlouer = vRepository.findById( reservation.getVoitureLouer().getIdVoiture()).orElseThrow();
-
+        if (vlouer != null) {
+            vlouer.setIsDisponible(false); // Mettre le statut à false non dispo
+            // Vous devez sauvegarder la voiture aussi si elle est modifiée
+            voitureLouerRepository.save(vlouer);
+        }
         // Traitement des fichiers d'images
     if (imageFiles != null && !imageFiles.isEmpty()) {
         String imageLocation = "C:\\xampp\\htdocs\\karlo";
@@ -123,6 +130,34 @@ public class ReservationService {
         return rRepository.save(res);
     }
 
+    public Map<String, Long> getTotalAmountByMonth() {
+        List<Object[]> results = rRepository.findTotalAmountByMonth();
+        Map<String, Long> totalByMonth = new HashMap<>();
+        
+        // Convert the results to a map
+        for (Object[] result : results) {
+            String monthYear = (String) result[0];
+            Long totalAmount = ((Number) result[1]).longValue();
+            totalByMonth.put(monthYear, totalAmount);
+        }
+
+        // Generate a list of all months of the current year
+        YearMonth now = YearMonth.now();
+        for (int month = 1; month <= 12; month++) {
+            String monthYear = now.withMonth(month).toString();
+            monthYear = monthYear.substring(0, 7); // Extract 'YYYY-MM'
+            totalByMonth.putIfAbsent(monthYear, 0L);
+        }
+
+        return totalByMonth;
+    }
+
+
+    public Long getTotalReservation() {
+        return rRepository.calculateTotalReservation();
+    }
+
+
     public List<Reservation> getAllReservation() {
 
         List<Reservation> res = rRepository.findAll();
@@ -181,4 +216,5 @@ public class ReservationService {
             rRepository.delete(reservation);
         return "Reservation supprimé avec succèss";
     }
+
 }

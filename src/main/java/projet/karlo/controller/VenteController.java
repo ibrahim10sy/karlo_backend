@@ -2,6 +2,7 @@ package projet.karlo.controller;
 
 import java.util.List;
 
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,7 +68,7 @@ public class VenteController {
         Vente savedVente = venteService.updateVente(vente, id, imageFiles);
         System.out.println(" controller :" + savedVente);
     
-        return new ResponseEntity<>(savedVente, HttpStatus.CREATED);
+        return new ResponseEntity<>(savedVente, HttpStatus.OK);
     }
 
      @GetMapping("/getAllVente")
@@ -82,7 +83,16 @@ public class VenteController {
                 return new ResponseEntity<>(venteService.getAllVenteByClient(nomClient),HttpStatus.OK);
     }
 
+     @GetMapping("/totalVenteParMoi")
+    public java.util.Map<String, Long> getTotalSalesByMonth() {
+        return venteService.getTotalSalesByMonth();
+    }
 
+
+    @GetMapping("/totalVoitureVendu")
+    public Long getTotalSales() {
+        return venteService.getTotalSales();
+    }
    
         @DeleteMapping("/delete/{id}")
         @Operation(summary="Suppression d'une vente de voiture")

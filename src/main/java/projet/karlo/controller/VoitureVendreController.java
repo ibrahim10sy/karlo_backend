@@ -86,6 +86,20 @@ public class VoitureVendreController {
                 return voitureServices.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);
             }
 
+
+            @PutMapping("/activer/{id}")
+            @Operation(summary="Activation d'une voiture à vendre mettre son statut à disponible")
+            public ResponseEntity<VoitureVendre> activeVoitureVendre(@PathVariable String id) throws Exception {
+                return new ResponseEntity<>(voitureServices.active(id), HttpStatus.OK);
+            }
+        
+            @PutMapping("/desactiver/{id}")
+            @Operation(summary="Desactivation d'une voiture vendre mettre son statut à non disponible")
+            public ResponseEntity<VoitureVendre> desactiveVoitureVendre(@PathVariable String id) throws Exception {
+                return new ResponseEntity<>(voitureServices.desactive(id), HttpStatus.OK);
+            }
+
+
             @GetMapping("/getAllVoiture")
             @Operation(summary="Liste de toutes les Voitures")
             public ResponseEntity<List<VoitureVendre>> getAllVoitures(){

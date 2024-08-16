@@ -92,6 +92,8 @@ public class VoitureVendreService {
         vVendre.setImages(imagePaths);
     }
 
+        vVendre.setIsVendu(false);
+
        // Génération de l'ID et mise à jour de la date
         String idcodes = idGenerator.genererCode();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -158,6 +160,32 @@ public class VoitureVendreService {
 
         return voitureVendreRepository.save(v);
     }
+
+
+    public VoitureVendre active(String id) throws Exception{
+        VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(null);
+
+        try {
+            v.setIsVendu(true);
+        } catch (Exception e) {
+            throw new Exception("Erreur lors de l'activation de la voiture: " + e.getMessage());
+        }
+        historiqueService.createHistorique("Mis à jour du statut à vendu de la voiture" + v.getMatricule() + " model " + v.getModele());
+        return voitureVendreRepository.save(v);
+    }
+
+    public VoitureVendre desactive(String id) throws Exception{
+        VoitureVendre v = voitureVendreRepository.findById(id).orElseThrow(null);
+
+        try {
+            v.setIsVendu(false);
+        } catch (Exception e) {
+            throw new Exception("Erreur lors de la desactivation du User : " + e.getMessage());
+        }
+        historiqueService.createHistorique("Mis à jour du statut à non vendu de la voiture" + v.getMatricule() + " model " + v.getModele());
+        return voitureVendreRepository.save(v);
+    }
+
 
     public List<VoitureVendre> searchVoitures(String nomMarque, String nomTypeVoiture, String nomTypeReservoir, int prix) {
         return voitureVendreRepository.searchVoitures(nomMarque, nomTypeVoiture, nomTypeReservoir, prix);

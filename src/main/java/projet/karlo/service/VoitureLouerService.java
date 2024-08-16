@@ -119,6 +119,7 @@ public class VoitureLouerService {
         v.setPrixProprietaire(vlouer.getPrixProprietaire());
         v.setPrixAugmente(vlouer.getPrixAugmente());
         v.setIsChauffeur(vlouer.getIsChauffeur());
+        v.setIsDisponible(true);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime now = LocalDateTime.now();
         v.setDateModif(now.format(formatter));
@@ -250,6 +251,30 @@ public class VoitureLouerService {
 
     //     return voitureList;
     // }
+
+    public VoitureLouer active(String id) throws Exception{
+        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(null);
+
+        try {
+            v.setIsDisponible(true);
+        } catch (Exception e) {
+            throw new Exception("Erreur lors de l'activation de la voiture: " + e.getMessage());
+        }
+        historiqueService.createHistorique("Mis à jour du statut à disponible de la voiture" + v.getMatricule() + " model " + v.getModele());
+        return voitureLouerRepository.save(v);
+    }
+
+    public VoitureLouer desactive(String id) throws Exception{
+        VoitureLouer v = voitureLouerRepository.findById(id).orElseThrow(null);
+
+        try {
+            v.setIsDisponible(false);
+        } catch (Exception e) {
+            throw new Exception("Erreur lors de la desactivation du User : " + e.getMessage());
+        }
+        historiqueService.createHistorique("Mis à jour du statut à non disponible de la voiture" + v.getMatricule() + " model " + v.getModele());
+        return voitureLouerRepository.save(v);
+    }
 
       public List<VoitureLouer> getAllVoitureByMarque(String nom){
         List<VoitureLouer> voitureList = voitureLouerRepository.findByMarque_NomMarque(nom);

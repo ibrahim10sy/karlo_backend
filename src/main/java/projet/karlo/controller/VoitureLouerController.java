@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import projet.karlo.model.User;
 import projet.karlo.model.VoitureLouer;
 import projet.karlo.service.VoitureLouerService;
 
@@ -67,6 +68,19 @@ public class VoitureLouerController {
         System.out.println("Vendre controller :" + savedVoiture);
 
         return new ResponseEntity<>(savedVoiture, HttpStatus.OK);
+    }
+
+
+       @PutMapping("/activer/{id}")
+    @Operation(summary="Activation d'une voiture à louer mettre son statut à disponible")
+    public ResponseEntity<VoitureLouer> activeVoitureLouer(@PathVariable String id) throws Exception {
+        return new ResponseEntity<>(voitureServices.active(id), HttpStatus.OK);
+    }
+
+    @PutMapping("/desactiver/{id}")
+    @Operation(summary="Desactivation d'une voiture à louer mettre son statut à non disponible")
+    public ResponseEntity<VoitureLouer> desactiveVoitureLouer(@PathVariable String id) throws Exception {
+        return new ResponseEntity<>(voitureServices.desactive(id), HttpStatus.OK);
     }
 
             @PutMapping("/updateView/{id}")
